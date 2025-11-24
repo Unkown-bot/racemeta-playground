@@ -5,699 +5,730 @@
   <title>RaceMeta – F1 Strategy Agent</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-  <!-- Font -->
+  <!-- Inter font -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
-  <style>
-    :root {
-      --bg: #020617;              /* overall background */
-      --bg-gradient-top: #0b1120;
-      --card: #020617;
-      --card-elevated: #020617;
-      --card-inner: #020617;
-      --border: #1f2933;
-      --border-soft: #111827;
-      --accent: #22d3ee;          /* cyan accent */
-      --accent-soft: rgba(34, 211, 238, 0.16);
-      --accent-strong: rgba(34, 211, 238, 0.28);
-      --text: #e5e7eb;
-      --muted: #9ca3af;
-      --danger-bg: #451a1a;
-      --danger-border: #fecaca;
-      --danger-text: #fecaca;
-      --radius-lg: 18px;
-      --radius-md: 12px;
-      --radius-pill: 999px;
-      --font-main: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
-        "SF Pro Text", "Segoe UI", sans-serif;
-    }
-
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      min-height: 100vh;
-      font-family: var(--font-main);
-      background:
-        radial-gradient(circle at top, var(--bg-gradient-top) 0, transparent 55%),
-        var(--bg);
-      color: var(--text);
-      display: flex;
-      justify-content: center;
-      padding: 24px 12px 40px;
-    }
-
-    .shell {
-      width: 100%;
-      max-width: 960px;
-    }
-
-    /* Header */
-
-    .header-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 24px;
-      padding: 10px 16px;
-      border-radius: 999px;
-      background: rgba(15, 23, 42, 0.96);
-      border: 1px solid #1e293b;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65);
-      backdrop-filter: blur(18px);
-    }
-
-    .brand {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-
-    .brand-main {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      font-weight: 600;
-      font-size: 17px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-    }
-
-    .brand-main .logo-dot {
-      width: 18px;
-      height: 18px;
-      border-radius: 7px;
-      background: radial-gradient(circle at 25% 20%, #e0f2fe 0, #22d3ee 40%, #0369a1 100%);
-      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.4);
-    }
-
-    .brand-badge {
-      font-size: 11px;
-      padding: 3px 9px;
-      border-radius: 999px;
-      border: 1px solid rgba(148, 163, 184, 0.6);
-      color: #cbd5f5;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
-    }
-
-    .brand-tagline {
-      font-size: 12px;
-      color: var(--muted);
-      max-width: 540px;
-    }
-
-    .status-compact {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      font-size: 11px;
-      color: var(--muted);
-      white-space: nowrap;
-    }
-
-    .status-dot {
-      width: 9px;
-      height: 9px;
-      border-radius: 999px;
-      background: #22c55e;
-      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
-    }
-
-    /* Layout */
-
-    .stack {
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-    }
-
-    .card {
-      background: radial-gradient(circle at top left, #020617 0, #020617 55%);
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-soft);
-      padding: 16px 16px 14px;
-      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65);
-    }
-
-    .card-header {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 10px;
-      gap: 8px;
-    }
-
-    .card-title {
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--muted);
-      font-weight: 600;
-    }
-
-    .card-chip {
-      padding: 4px 10px;
-      border-radius: var(--radius-pill);
-      background: rgba(15, 23, 42, 0.9);
-      border: 1px solid rgba(51, 65, 85, 0.9);
-      font-size: 11px;
-      color: #cbd5f5;
-      white-space: nowrap;
-    }
-
-    /* Question area */
-
-    .prompt-card-inner {
-      border-radius: var(--radius-md);
-      border: 1px solid var(--border-soft);
-      padding: 12px;
-      background: #020617;
-      display: flex;
-      flex-direction: column;
-      gap: 9px;
-    }
-
-    .prompt-row {
-      display: flex;
-      align-items: stretch;
-      gap: 10px;
-    }
-
-    textarea {
-      flex: 1;
-      resize: none;
-      min-height: 96px;
-      border-radius: 10px;
-      border: 1px solid #1f2937;
-      background: radial-gradient(circle at top left, #020617 0, #020617 70%);
-      color: var(--text);
-      padding: 9px 11px;
-      font-size: 14px;
-      font-family: var(--font-main);
-      outline: none;
-      transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
-      line-height: 1.45;
-    }
-
-    textarea::placeholder {
-      color: #6b7280;
-    }
-
-    textarea:focus {
-      border-color: var(--accent);
-      box-shadow: 0 0 0 1px var(--accent-strong);
-      background: radial-gradient(circle at top left, #020617 0, #020617 65%);
-    }
-
-    .btn-primary {
-      align-self: stretch;
-      padding: 0 18px;
-      border-radius: 11px;
-      border: none;
-      background: linear-gradient(135deg, #38bdf8, #22d3ee);
-      color: #020617;
-      font-weight: 600;
-      font-size: 12px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      cursor: pointer;
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-      white-space: nowrap;
-      transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
-      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.9);
-    }
-
-    .btn-primary:hover {
-      filter: brightness(1.05);
-      transform: translateY(-1px);
-      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.95);
-    }
-
-    .btn-primary:active {
-      transform: translateY(1px);
-      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.9);
-      filter: brightness(0.97);
-    }
-
-    .btn-primary[disabled] {
-      opacity: 0.7;
-      cursor: default;
-      transform: none;
-      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.75);
-    }
-
-    .prompt-meta {
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      flex-wrap: wrap;
-      gap: 4px 10px;
-      justify-content: space-between;
-      margin-top: 2px;
-      line-height: 1.4;
-    }
-
-    .chips-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .chip {
-      padding: 5px 10px;
-      border-radius: 999px;
-      background: #020617;
-      color: #cbd5f5;
-      border: 1px solid #1f2937;
-      font-size: 11px;
-      cursor: pointer;
-      transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease, color 0.12s ease;
-    }
-
-    .chip:hover {
-      background: #020617;
-      border-color: var(--accent);
-      color: #e0f2fe;
-      transform: translateY(-1px);
-    }
-
-    /* Verdict */
-
-    .verdict-body {
-      font-size: 13px;
-      line-height: 1.55;
-      color: #e5e7eb;
-      white-space: pre-line;
-    }
-
-    .verdict-placeholder {
-      color: var(--muted);
-    }
-
-    .verdict-error {
-      margin-top: 8px;
-      border-radius: 9px;
-      background: var(--danger-bg);
-      border: 1px solid var(--danger-border);
-      color: var(--danger-text);
-      font-size: 12px;
-      padding: 7px 10px;
-    }
-
-    .badge-row {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      font-size: 11px;
-      color: var(--muted);
-      margin-bottom: 8px;
-    }
-
-    .badge-row-left {
-      display: flex;
-      align-items: center;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-
-    .badge-pill {
-      padding: 3px 9px;
-      border-radius: 999px;
-      background: #020617;
-      border: 1px solid #1f2937;
-    }
-
-    .pill-online {
-      background: rgba(34, 197, 94, 0.08);
-      border-color: rgba(34, 197, 94, 0.6);
-      color: #4ade80;
-    }
-
-    .pill-copy {
-      cursor: pointer;
-      user-select: none;
-    }
-
-    .pill-copy:hover {
-      border-color: var(--accent);
-      color: #e0f2fe;
-      background: rgba(15, 23, 42, 0.9);
-    }
-
-    .loading-row {
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 12px;
-      color: var(--muted);
-    }
-
-    .spinner {
-      width: 14px;
-      height: 14px;
-      border-radius: 50%;
-      border: 2px solid rgba(148, 163, 184, 0.3);
-      border-top-color: var(--accent);
-      animation: spin 0.8s linear infinite;
-    }
-
-    @keyframes spin {
-      to {
-        transform: rotate(360deg);
-      }
-    }
-
-    .tip-row {
-      margin-top: 8px;
-      font-size: 11px;
-      color: var(--muted);
-      display: flex;
-      justify-content: space-between;
-      gap: 8px;
-      flex-wrap: wrap;
-      line-height: 1.45;
-    }
-
-    .tip-main {
-      flex: 1 1 auto;
-      min-width: 180px;
-    }
-
-    .context-toggle {
-      font-size: 11px;
-      color: var(--accent);
-      cursor: pointer;
-      text-decoration: underline;
-      flex-shrink: 0;
-    }
-
-    .context-block {
-      margin-top: 6px;
-      padding: 8px;
-      border-radius: 8px;
-      background: #020617;
-      border: 1px dashed #1f2937;
-      font-size: 11px;
-      color: #cbd5f5;
-      max-height: 220px;
-      overflow: auto;
-      display: none;
-      white-space: pre-line;
-    }
-
-    .context-block.visible {
-      display: block;
-    }
-
-    @media (max-width: 640px) {
-      .header-row {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 10px;
-      }
-
-      .prompt-row {
-        flex-direction: column;
-      }
-
-      .btn-primary {
-        align-self: flex-end;
-        height: 40px;
-        padding-inline: 20px;
-      }
-
-      .tip-row {
-        flex-direction: column;
-        align-items: flex-start;
-      }
-    }
-  </style>
-</head>
-<body>
-  <div class="shell">
-    <!-- Header -->
-    <div class="header-row">
-      <div class="brand">
-        <div class="brand-main">
-          <div class="logo-dot"></div>
-          <span>RACEMETA</span>
-          <span class="brand-badge">F1 STRATEGY AGENT</span>
-        </div>
-        <div class="brand-tagline">
-          Ask about any stint, pit stop or tyre call. RaceMeta calls the strategy like a pit-wall engineer.
-        </div>
-      </div>
-
-      <div class="status-compact">
-        <div class="status-dot"></div>
-        <span>Backend live</span>
-      </div>
-    </div>
-
-    <!-- Main content -->
-    <div class="stack">
-      <!-- Question card -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">Question</div>
-          <div class="card-chip">Mention track, lap, tyres and gaps for best answers</div>
-        </div>
-
-        <div class="prompt-card-inner">
-          <div class="prompt-row">
-            <textarea
-              id="questionInput"
-              placeholder='Example: "Bahrain – Leclerc starts on mediums, pits lap 16 for hards with 2.8s gap. Was that too early?"'
-            ></textarea>
-            <button id="analyzeBtn" class="btn-primary">
-              Analyze
-            </button>
-          </div>
-
-          <div class="prompt-meta">
-            <span>RaceMeta doesn’t need perfect wording – just enough context.</span>
-            <span>⌘+Enter / Ctrl+Enter to analyze quickly.</span>
-          </div>
-
-          <div class="chips-row">
-            <button class="chip" data-example="Bahrain – Leclerc starts on mediums, boxes lap 16 for hards with a 2.8s gap to Russell. High deg. Was that pit timing correct?">
-              Leclerc box lap 16 in Bahrain
-            </button>
-            <button class="chip" data-example="Generic dry race – Norris on softs with high deg, Ferrari and Mercedes pit lap 12 for mediums. McLaren covers on lap 13. Was that smart or should they have extended?">
-              Norris cover vs undercut
-            </button>
-            <button class="chip" data-example="Australia – Safety Car on lap 20, Perez stays out on used mediums while most box for hards. Was staying out the right call?">
-              Perez staying out under SC
-            </button>
-          </div>
-        </div>
-      </div>
-
-      <!-- Verdict card -->
-      <div class="card">
-        <div class="card-header">
-          <div class="card-title">RaceMeta Verdict</div>
-          <div class="card-chip">Answer is tuned for clear, high-signal explanation</div>
-        </div>
-
-        <div>
-          <div class="badge-row">
-            <div class="badge-row-left">
-              <div class="badge-pill pill-online">Agent online</div>
-              <div class="badge-pill">Reads your scenario, not live timing</div>
-            </div>
-            <div class="badge-pill pill-copy" id="copyTakeBtn">
-              Copy verdict
-            </div>
-          </div>
-
-          <div id="verdictArea" class="verdict-body verdict-placeholder">
-Ask about a pit call, stint length or tyre choice and RaceMeta will tell you if it made sense.
-
-Good prompts:
-– "Bahrain – was pitting Leclerc on lap 16 for hards optimal?"
-– "Dry race – should Norris have covered the undercut on lap 13?"
-– "Australia – did staying out under the Safety Car cost Perez?"
-          </div>
-
-          <div id="errorArea" class="verdict-error" style="display:none;"></div>
-
-          <div class="tip-row">
-            <span id="statusText" class="tip-main">
-Verdict ready – change laps, tyres or gaps to see how the call shifts.
-            </span>
-            <span class="context-toggle" id="contextToggle" style="display:none;">
-              Show context block
-            </span>
-          </div>
-
-          <div id="contextBlock" class="context-block"></div>
-        </div>
-      </div>
-    </div>
-  </div>
-
+  <!-- Tailwind via CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
   <script>
-    const BACKEND_URL =
-      "https://racemeta-backend-production.up.railway.app/analyze_latest";
-
-    const questionInput = document.getElementById("questionInput");
-    const analyzeBtn = document.getElementById("analyzeBtn");
-    const verdictArea = document.getElementById("verdictArea");
-    const errorArea = document.getElementById("errorArea");
-    const statusText = document.getElementById("statusText");
-    const contextToggle = document.getElementById("contextToggle");
-    const contextBlock = document.getElementById("contextBlock");
-    const copyTakeBtn = document.getElementById("copyTakeBtn");
-
-    let lastVerdict = "";
-    let lastTakeLine = "";
-    let loading = false;
-
-    function setLoading(isLoading) {
-      loading = isLoading;
-      analyzeBtn.disabled = isLoading;
-
-      if (isLoading) {
-        verdictArea.textContent = "";
-        verdictArea.classList.remove("verdict-placeholder");
-        errorArea.style.display = "none";
-
-        const row = document.createElement("div");
-        row.className = "loading-row";
-        row.innerHTML =
-          '<div class="spinner"></div><span>Thinking through tyre deg, gaps and pit windows…</span>';
-        verdictArea.appendChild(row);
-
-        statusText.textContent = "Talking to the RaceMeta backend…";
-      } else {
-        if (!lastVerdict) {
-          verdictArea.classList.add("verdict-placeholder");
-          statusText.textContent =
-            "Verdict ready – change laps, tyres or gaps to see how the call shifts.";
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'system-ui', '-apple-system', 'BlinkMacSystemFont', 'Segoe UI', 'sans-serif'],
+          },
+          colors: {
+            'rm-bg': '#0a0a0f',
+          }
         }
       }
     }
+  </script>
 
-    async function callRacemeta() {
-      const question = questionInput.value.trim();
-      if (!question) {
-        questionInput.focus();
-        return;
+  <style>
+    body {
+      font-family: 'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      background-color: #0a0a0f;
+      color: #e5e7eb;
+    }
+    /* small helper for fade-in */
+    .fade-in {
+      animation: fade-in 0.5s ease-out;
+    }
+    @keyframes fade-in {
+      from { opacity: 0; transform: translateY(4px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body class="min-h-screen bg-rm-bg text-slate-100">
+  <!-- background halos -->
+  <div class="fixed inset-0 pointer-events-none overflow-hidden">
+    <div class="absolute -top-32 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 right-1/4 w-96 h-96 bg-orange-500/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative min-h-screen flex flex-col">
+    <!-- HEADER -->
+    <header class="border-b border-white/5 bg-black/30 backdrop-blur-xl z-10">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/40">
+            <!-- simple lightning icon -->
+            <svg viewBox="0 0 24 24" class="w-5 h-5 text-white" fill="currentColor">
+              <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path>
+            </svg>
+          </div>
+          <div>
+            <div class="flex items-center gap-2">
+              <span class="text-white text-lg font-semibold tracking-tight">RaceMeta</span>
+              <span class="px-2 py-0.5 text-[11px] rounded bg-red-500/10 border border-red-500/30 text-red-300 uppercase tracking-[0.18em]">
+                AI Strategy Agent
+              </span>
+            </div>
+            <p class="text-slate-500 text-xs sm:text-sm">
+              Race strategy analysis powered by telemetry & timing data
+            </p>
+          </div>
+        </div>
+
+        <div id="headerControls" class="hidden items-center gap-3">
+          <!-- view toggle -->
+          <div class="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-lg text-sm">
+            <button id="viewSimpleBtn"
+              class="px-3 py-1.5 rounded bg-red-500 text-white shadow shadow-red-500/40 text-xs sm:text-sm">
+              Simple
+            </button>
+            <button id="viewProBtn"
+              class="px-3 py-1.5 rounded text-slate-400 hover:text-white text-xs sm:text-sm">
+              Pro
+            </button>
+          </div>
+          <button id="newAnalysisBtn"
+            class="text-xs sm:text-sm text-slate-400 hover:text-white transition-colors">
+            New analysis
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- MAIN -->
+    <main class="flex-1">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 py-10 sm:py-14">
+        <!-- ASK SECTION -->
+        <section id="askSection" class="max-w-3xl mx-auto fade-in">
+          <div class="text-center mb-10">
+            <h1 class="text-2xl sm:text-3xl text-white mb-3 font-semibold">
+              Ask about any F1 race strategy decision
+            </h1>
+            <p class="text-slate-400 text-sm sm:text-base">
+              Describe the stint, tyres, laps and gaps. RaceMeta judges if the call made sense.
+            </p>
+          </div>
+
+          <div class="relative">
+            <div class="absolute -inset-1 bg-gradient-to-r from-red-500/25 to-orange-500/25 rounded-2xl blur-2xl opacity-70"></div>
+            <div class="relative bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+              <div class="space-y-4">
+                <div>
+                  <label for="questionInput" class="block text-sm text-white mb-2 font-medium">
+                    Your question
+                  </label>
+                  <textarea id="questionInput"
+                    class="w-full min-h-[110px] bg-black/40 border border-white/10 rounded-xl px-3 py-2.5 text-sm sm:text-base text-white placeholder:text-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-transparent"
+                    placeholder="e.g., Should Leclerc have pit on lap 16 for hards in Bahrain with a 2.8s gap to Russell?"
+                  ></textarea>
+                  <p class="mt-2 text-[11px] text-slate-500">
+                    Press <span id="shortcutLabel">Ctrl</span> + Enter to analyze
+                  </p>
+                </div>
+
+                <button id="analyzeBtn"
+                  class="w-full h-11 sm:h-12 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white text-xs sm:text-sm font-semibold tracking-[0.16em] uppercase flex items-center justify-center gap-2 shadow-lg shadow-red-500/35 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <span id="analyzeBtnLabel">Analyze Strategy</span>
+                  <span id="analyzeSpinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+                </button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Example prompts -->
+          <div class="mt-10">
+            <p class="text-slate-500 text-xs sm:text-sm mb-3">Try asking:</p>
+            <div class="space-y-3">
+              <button
+                class="w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm text-slate-300 hover:text-white transition-all example-btn"
+                data-example="Was Hamilton's undercut attempt on lap 24 in Silverstone optimal?">
+                Was Hamilton's undercut attempt on lap 24 in Silverstone optimal?
+              </button>
+              <button
+                class="w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm text-slate-300 hover:text-white transition-all example-btn"
+                data-example="Should Verstappen have stayed out during the VSC at lap 32 in Monaco?">
+                Should Verstappen have stayed out during the VSC at lap 32 in Monaco?
+              </button>
+              <button
+                class="w-full text-left px-4 py-3 rounded-lg bg-white/5 hover:bg-white/10 border border-white/10 text-xs sm:text-sm text-slate-300 hover:text-white transition-all example-btn"
+                data-example="Did Russell make the right call pitting for softs in the final stint at Singapore?">
+                Did Russell make the right call pitting for softs in the final stint at Singapore?
+              </button>
+            </div>
+          </div>
+        </section>
+
+        <!-- SIMPLE VERDICT -->
+        <section id="simpleSection" class="max-w-3xl mx-auto hidden fade-in">
+          <!-- race context -->
+          <div id="simpleContext" class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400 mb-6">
+            <!-- filled by JS -->
+          </div>
+
+          <!-- verdict card -->
+          <div class="relative mb-6">
+            <div id="simpleGlow" class="absolute -inset-1 rounded-2xl blur-2xl opacity-60"></div>
+            <div id="simpleCard"
+              class="relative bg-gradient-to-b from-white/10 to-white/5 border border-white/15 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+              <div class="flex gap-4 sm:gap-6 items-start mb-5">
+                <div id="simpleIconWrapper"
+                  class="p-3 sm:p-4 rounded-xl border flex items-center justify-center">
+                  <span id="simpleIconEmoji" class="text-xl sm:text-2xl">⚖️</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap items-center gap-3 mb-2">
+                    <span id="simpleVerdictLabel" class="text-lg sm:text-2xl font-semibold text-slate-100">
+                      Strategy verdict
+                    </span>
+                    <span id="simpleConfidence"
+                      class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] sm:text-xs text-slate-300">
+                      Confidence ~80%
+                    </span>
+                  </div>
+                  <p id="simpleSummary" class="text-slate-200 text-sm sm:text-base leading-relaxed">
+                    <!-- summary text -->
+                  </p>
+                </div>
+              </div>
+
+              <!-- quick metrics - purely illustrative -->
+              <div class="grid grid-cols-3 gap-3 pt-5 border-t border-white/10">
+                <div class="text-center">
+                  <p class="text-[11px] text-slate-500 mb-1">Tyres / stint</p>
+                  <p class="text-sm text-slate-200">See verdict</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-[11px] text-slate-500 mb-1">Track position risk</p>
+                  <p class="text-sm text-slate-200">Explained above</p>
+                </div>
+                <div class="text-center">
+                  <p class="text-[11px] text-slate-500 mb-1">Alt. window</p>
+                  <p class="text-sm text-slate-200">Coming from telemetry</p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- recommended text (optional) -->
+          <div id="simpleAltBlock" class="hidden bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-5 sm:p-6 mb-6">
+            <p class="text-[11px] sm:text-xs text-slate-500 mb-2">Recommended alternative</p>
+            <p id="simpleAltText" class="text-slate-200 text-sm sm:text-base leading-relaxed"></p>
+          </div>
+
+          <!-- go pro -->
+          <button id="simpleToProBtn"
+            class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm sm:text-base bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/25 hover:border-red-500/40 text-red-300 hover:text-red-200 transition-all">
+            <span>View detailed analysis</span>
+            <span class="text-lg">›</span>
+          </button>
+
+          <!-- good prompts -->
+          <div class="pt-8">
+            <p class="text-slate-500 text-xs sm:text-sm mb-3">Good prompts:</p>
+            <div class="space-y-2 text-xs sm:text-sm">
+              <div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300">
+                "Bahrain – was pitting Leclerc on lap 16 for hards optimal?"
+              </div>
+              <div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300">
+                "Generic dry race – should Norris have covered the undercut on lap 13?"
+              </div>
+              <div class="px-4 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-300">
+                "Australia – did staying out under the Safety Car cost Perez?"
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- PRO VIEW -->
+        <section id="proSection" class="max-w-6xl mx-auto hidden fade-in">
+          <!-- context line -->
+          <div id="proContext" class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400 mb-6">
+            <!-- filled by JS -->
+          </div>
+
+          <!-- verdict banner -->
+          <div class="relative mb-8">
+            <div id="proGlow" class="absolute -inset-1 rounded-2xl blur-2xl opacity-70"></div>
+            <div id="proCard"
+              class="relative bg-gradient-to-b from-white/10 to-white/5 border border-white/15 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
+              <div class="flex flex-col sm:flex-row gap-4 sm:gap-6 items-start">
+                <div id="proIconWrapper"
+                  class="p-3 sm:p-4 rounded-xl border flex items-center justify-center">
+                  <span id="proIconEmoji" class="text-xl sm:text-2xl">⚖️</span>
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex flex-wrap gap-3 items-center mb-3">
+                    <h2 id="proVerdictLabel" class="text-xl sm:text-2xl font-semibold text-slate-100">
+                      Strategy verdict
+                    </h2>
+                    <span id="proConfidence"
+                      class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-[11px] sm:text-xs text-slate-200">
+                      Confidence ~80%
+                    </span>
+                  </div>
+                  <p id="proSummary" class="text-slate-200 text-sm sm:text-base leading-relaxed mb-4">
+                    <!-- summary -->
+                  </p>
+                  <p class="text-[11px] sm:text-xs text-slate-400">
+                    Telemetry-based metrics (tyre deg, traffic cost, undercut window) plug in here as the backend evolves.
+                  </p>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- metrics grid - currently generic placeholders -->
+          <h3 class="text-sm sm:text-base font-semibold text-white mb-4">Performance metrics (layout preview)</h3>
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
+            <!-- 6 generic cards -->
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Tyre life</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Will show remaining performance window.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-2/3 bg-emerald-500"></div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Track position</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Lost / gained places through the cycle.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-1/3 bg-red-500"></div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Pace delta</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Post-stop pace vs rivals.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-1/2 bg-cyan-500"></div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Traffic cost</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Time lost fighting cars after the stop.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-1/3 bg-red-500"></div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Undercut window</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Optimal lap range for the stop.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-1/2 bg-orange-500"></div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Final position</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Actual vs projected outcome.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-1/2 bg-slate-500"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- detailed reasoning -->
+          <h3 class="text-sm sm:text-base font-semibold text-white mb-4">Detailed analysis</h3>
+          <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-5 sm:p-6 mb-8">
+            <div id="proReasons" class="space-y-3 text-sm sm:text-base text-slate-200">
+              <!-- list items inserted here -->
+            </div>
+          </div>
+
+          <!-- recommended strategy block -->
+          <div id="proAltBlock" class="hidden mb-10">
+            <div class="flex items-center gap-2 mb-3">
+              <span class="text-amber-400">💡</span>
+              <h3 class="text-sm sm:text-base font-semibold text-white">Recommended strategy</h3>
+            </div>
+            <div class="relative">
+              <div class="absolute -inset-1 bg-gradient-to-r from-amber-500/25 to-orange-500/25 rounded-2xl blur-2xl opacity-75"></div>
+              <div class="relative bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/30 rounded-2xl p-5 sm:p-6">
+                <p id="proAltText" class="text-sm sm:text-base text-slate-100 leading-relaxed"></p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- error banner -->
+        <div id="errorBanner" class="hidden max-w-3xl mx-auto mt-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/40 text-xs sm:text-sm text-red-200">
+          Could not reach the RaceMeta backend. Showing a demo verdict instead.
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    const BACKEND_URL = "https://racemeta-backend-production.up.railway.app/analyze_latest";
+
+    const askSection = document.getElementById("askSection");
+    const simpleSection = document.getElementById("simpleSection");
+    const proSection = document.getElementById("proSection");
+    const headerControls = document.getElementById("headerControls");
+    const errorBanner = document.getElementById("errorBanner");
+
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const analyzeBtnLabel = document.getElementById("analyzeBtnLabel");
+    const analyzeSpinner = document.getElementById("analyzeSpinner");
+    const questionInput = document.getElementById("questionInput");
+
+    const viewSimpleBtn = document.getElementById("viewSimpleBtn");
+    const viewProBtn = document.getElementById("viewProBtn");
+    const newAnalysisBtn = document.getElementById("newAnalysisBtn");
+    const simpleToProBtn = document.getElementById("simpleToProBtn");
+    const shortcutLabel = document.getElementById("shortcutLabel");
+
+    // simple view fields
+    const simpleContext = document.getElementById("simpleContext");
+    const simpleGlow = document.getElementById("simpleGlow");
+    const simpleIconWrapper = document.getElementById("simpleIconWrapper");
+    const simpleIconEmoji = document.getElementById("simpleIconEmoji");
+    const simpleVerdictLabel = document.getElementById("simpleVerdictLabel");
+    const simpleConfidence = document.getElementById("simpleConfidence");
+    const simpleSummary = document.getElementById("simpleSummary");
+    const simpleAltBlock = document.getElementById("simpleAltBlock");
+    const simpleAltText = document.getElementById("simpleAltText");
+
+    // pro view fields
+    const proContext = document.getElementById("proContext");
+    const proGlow = document.getElementById("proGlow");
+    const proIconWrapper = document.getElementById("proIconWrapper");
+    const proIconEmoji = document.getElementById("proIconEmoji");
+    const proVerdictLabel = document.getElementById("proVerdictLabel");
+    const proConfidence = document.getElementById("proConfidence");
+    const proSummary = document.getElementById("proSummary");
+    const proReasons = document.getElementById("proReasons");
+    const proAltBlock = document.getElementById("proAltBlock");
+    const proAltText = document.getElementById("proAltText");
+
+    let lastResult = null;
+    let fromMock = false;
+
+    // platform label
+    if (navigator.platform && navigator.platform.includes("Mac")) {
+      shortcutLabel.textContent = "⌘";
+    }
+
+    function classifyVerdict(text) {
+      const t = (text || "").toLowerCase();
+      if (t.includes("suboptimal") || t.includes("too early") || t.includes("too late")) return "suboptimal";
+      if (t.includes("optimal") || t.includes("good call") || t.includes("right call")) return "optimal";
+      return "neutral";
+    }
+
+    function verdictStyles(type) {
+      if (type === "optimal") {
+        return {
+          label: "Optimal strategy",
+          color: "text-emerald-400",
+          glow: "from-emerald-500/30 to-teal-500/30",
+          emoji: "✅",
+        };
       }
+      if (type === "suboptimal") {
+        return {
+          label: "Suboptimal strategy",
+          color: "text-red-400",
+          glow: "from-red-500/40 to-rose-500/40",
+          emoji: "⚠️",
+        };
+      }
+      return {
+        label: "Neutral / marginal",
+        color: "text-amber-300",
+        glow: "from-amber-500/30 to-orange-500/30",
+        emoji: "➖",
+      };
+    }
+
+    function setGlow(element, gradient) {
+      element.className =
+        "absolute -inset-1 rounded-2xl blur-2xl opacity-70 bg-gradient-to-r " + gradient;
+    }
+
+    function setIconWrapper(element, type) {
+      let border, bg;
+      if (type === "optimal") {
+        border = "border-emerald-500/40";
+        bg = "bg-emerald-500/10";
+      } else if (type === "suboptimal") {
+        border = "border-red-500/40";
+        bg = "bg-red-500/10";
+      } else {
+        border = "border-amber-500/40";
+        bg = "bg-amber-500/10";
+      }
+      element.className =
+        "p-3 sm:p-4 rounded-xl border " + border + " " + bg + " flex items-center justify-center";
+    }
+
+    function mapBackendToResult(question, backendData) {
+      const verdictText =
+        (backendData && backendData.verdict) ||
+        "No explicit verdict text returned from the backend.";
+      const contextText = backendData && backendData.context ? backendData.context : "";
+      const lines = contextText
+        .split("\n")
+        .map((l) => l.trim())
+        .filter(Boolean);
+
+      return {
+        source: "backend",
+        summary: verdictText,
+        verdictType: classifyVerdict(verdictText),
+        confidence: 80,
+        reasoning: lines.length ? lines : [
+          "Backend did not yet return structured reasoning, only a single verdict text.",
+        ],
+        altStrategy: null,
+        raceContext: {
+          driver: "Driver",
+          race: "Latest race (backend default)",
+          lap: 0,
+          position: "—",
+          label: question.slice(0, 80) + (question.length > 80 ? "…" : ""),
+        },
+      };
+    }
+
+    function mockResult() {
+      return {
+        source: "mock",
+        summary:
+          "The pit stop timing was 2–3 laps too early. Maintaining track position would have yielded a better race outcome given tyre degradation rates and traffic conditions.",
+        verdictType: "suboptimal",
+        confidence: 87,
+        reasoning: [
+          "Tyre degradation was only at 28% – well below the 45% threshold where pitting becomes mandatory.",
+          "Pitting 2 laps before the optimal undercut window (lap 18–21) sacrificed valuable track position.",
+          "Car rejoined into traffic and lost ~4.2s battling Alonso, Ocon and Gasly after the stop.",
+          "The 0.8s/lap pace gain on new tyres was offset by the traffic loss for the next 8 laps.",
+          "Rivals who stopped on lap 18–19 kept track position and executed clean undercuts.",
+          "Final position P4 vs projected P2 if the stop was aligned with the optimal window.",
+        ],
+        altStrategy:
+          "Extend the stint to lap 18–19, targeting the main undercut window while tyre performance is still above 55%. This keeps track position and maximises the effective advantage of fresh tyres.",
+        raceContext: {
+          driver: "Charles Leclerc",
+          race: "Bahrain Grand Prix",
+          lap: 16,
+          position: "P2 → P4",
+          label: "Leclerc – Bahrain, lap 16 box for hards",
+        },
+      };
+    }
+
+    function applyResultToSimple(result) {
+      const vType = result.verdictType;
+      const styles = verdictStyles(vType);
+
+      setGlow(simpleGlow, styles.glow);
+      simpleIconEmoji.textContent = styles.emoji;
+      setIconWrapper(simpleIconWrapper, vType);
+
+      simpleVerdictLabel.textContent = styles.label;
+      simpleVerdictLabel.className =
+        styles.color + " text-lg sm:text-2xl font-semibold";
+
+      simpleConfidence.textContent = "Confidence ~" + result.confidence + "%";
+      simpleSummary.textContent = result.summary;
+
+      simpleContext.innerHTML = "";
+      const parts = [
+        { dot: "bg-red-400", text: result.raceContext.driver },
+        { dot: "bg-slate-600", text: result.raceContext.race },
+        { dot: "bg-slate-600", text: result.raceContext.lap ? "Lap " + result.raceContext.lap : "Lap –" },
+        { dot: "bg-slate-600", text: result.raceContext.position || "Position –" },
+      ];
+      parts.forEach((p) => {
+        const item = document.createElement("div");
+        item.className = "flex items-center gap-2";
+        item.innerHTML =
+          '<div class="w-1.5 h-1.5 rounded-full ' +
+          p.dot +
+          '"></div><span>' +
+          p.text +
+          "</span>";
+        simpleContext.appendChild(item);
+      });
+
+      if (result.altStrategy) {
+        simpleAltText.textContent = result.altStrategy;
+        simpleAltBlock.classList.remove("hidden");
+      } else {
+        simpleAltBlock.classList.add("hidden");
+      }
+    }
+
+    function applyResultToPro(result) {
+      const vType = result.verdictType;
+      const styles = verdictStyles(vType);
+
+      setGlow(proGlow, styles.glow);
+      proIconEmoji.textContent = styles.emoji;
+      setIconWrapper(proIconWrapper, vType);
+
+      proVerdictLabel.textContent = styles.label;
+      proVerdictLabel.className =
+        styles.color + " text-xl sm:text-2xl font-semibold";
+
+      proConfidence.textContent = result.confidence + "% confidence";
+      proSummary.textContent = result.summary;
+
+      proContext.innerHTML = "";
+      const parts = [
+        { dot: "bg-cyan-400", text: result.raceContext.driver },
+        { dot: "bg-slate-600", text: result.raceContext.race },
+        { dot: "bg-slate-600", text: result.raceContext.lap ? "Lap " + result.raceContext.lap : "Lap –" },
+        { dot: "bg-slate-600", text: result.raceContext.position || "Position –" },
+      ];
+      parts.forEach((p) => {
+        const item = document.createElement("div");
+        item.className = "flex items-center gap-2";
+        item.innerHTML =
+          '<div class="w-1.5 h-1.5 rounded-full ' +
+          p.dot +
+          '"></div><span>' +
+          p.text +
+          "</span>";
+        proContext.appendChild(item);
+      });
+
+      proReasons.innerHTML = "";
+      result.reasoning.forEach((reason, index) => {
+        const row = document.createElement("div");
+        row.className = "flex gap-3";
+        row.innerHTML =
+          '<div class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-lg border border-cyan-500/30 bg-cyan-500/10 text-[11px] text-cyan-300 mt-0.5">' +
+          (index + 1) +
+          "</div>" +
+          '<p class="flex-1 text-sm sm:text-base leading-relaxed text-slate-200">' +
+          reason +
+          "</p>";
+        proReasons.appendChild(row);
+      });
+
+      if (result.altStrategy) {
+        proAltText.textContent = result.altStrategy;
+        proAltBlock.classList.remove("hidden");
+      } else {
+        proAltBlock.classList.add("hidden");
+      }
+    }
+
+    function showAsk() {
+      askSection.classList.remove("hidden");
+      simpleSection.classList.add("hidden");
+      proSection.classList.add("hidden");
+      headerControls.classList.add("hidden");
+      errorBanner.classList.add("hidden");
+      lastResult = null;
+      fromMock = false;
+    }
+
+    function showSimple() {
+      if (!lastResult) return;
+      askSection.classList.add("hidden");
+      simpleSection.classList.remove("hidden");
+      proSection.classList.add("hidden");
+      headerControls.classList.remove("hidden");
+      viewSimpleBtn.classList.add("bg-red-500", "text-white", "shadow", "shadow-red-500/40");
+      viewProBtn.classList.remove("bg-red-500", "text-white", "shadow", "shadow-red-500/40");
+      viewSimpleBtn.classList.remove("text-slate-400");
+      viewProBtn.classList.add("text-slate-400");
+    }
+
+    function showPro() {
+      if (!lastResult) return;
+      askSection.classList.add("hidden");
+      simpleSection.classList.add("hidden");
+      proSection.classList.remove("hidden");
+      headerControls.classList.remove("hidden");
+      viewProBtn.classList.add("bg-red-500", "text-white", "shadow", "shadow-red-500/40");
+      viewSimpleBtn.classList.remove("bg-red-500", "text-white", "shadow", "shadow-red-500/40");
+      viewProBtn.classList.remove("text-slate-400");
+      viewSimpleBtn.classList.add("text-slate-400");
+    }
+
+    function setLoading(isLoading) {
+      analyzeBtn.disabled = isLoading;
+      if (isLoading) {
+        analyzeBtnLabel.textContent = "Analyzing race data…";
+        analyzeSpinner.classList.remove("hidden");
+      } else {
+        analyzeBtnLabel.textContent = "Analyze Strategy";
+        analyzeSpinner.classList.add("hidden");
+      }
+    }
+
+    async function handleAnalyze(question) {
+      const q = question.trim();
+      if (!q) return;
 
       setLoading(true);
-      contextBlock.classList.remove("visible");
-      contextToggle.style.display = "none";
+      errorBanner.classList.add("hidden");
 
       try {
         const res = await fetch(BACKEND_URL, {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ question }),
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ question: q }),
         });
 
         if (!res.ok) {
-          const msg = `Something went wrong talking to the backend (HTTP ${res.status}). Try again or tweak the question.`;
-          errorArea.textContent = msg;
-          errorArea.style.display = "block";
-          verdictArea.textContent = "";
-          lastVerdict = "";
-          lastTakeLine = "";
-          statusText.textContent =
-            "If this keeps happening, restart the backend and check its logs.";
-          return;
+          throw new Error("HTTP " + res.status);
         }
 
         const data = await res.json();
-
-        errorArea.style.display = "none";
-        verdictArea.classList.remove("verdict-placeholder");
-        verdictArea.textContent = data.verdict || "(No verdict returned.)";
-        lastVerdict = data.verdict || "";
-
-        const match = /Take:\s*(.+)$/im.exec(lastVerdict);
-        lastTakeLine = match ? match[1].trim() : lastVerdict;
-
-        if (data.context) {
-          contextBlock.textContent = data.context;
-          contextToggle.style.display = "inline";
-          contextToggle.textContent = "Show context block";
-        } else {
-          contextBlock.textContent = "";
-          contextToggle.style.display = "none";
-        }
-
-        statusText.textContent =
-          "Verdict ready – change laps, tyres or gaps to see how the call shifts.";
+        lastResult = mapBackendToResult(q, data);
+        fromMock = false;
       } catch (err) {
         console.error(err);
-        errorArea.textContent =
-          "Network error. Check your internet connection or whether the backend is awake.";
-        errorArea.style.display = "block";
-        verdictArea.textContent = "";
-        lastVerdict = "";
-        lastTakeLine = "";
-        statusText.textContent =
-          "If you just deployed, it can take a few seconds for the backend to wake up.";
+        errorBanner.classList.remove("hidden");
+        lastResult = mockResult();
+        fromMock = true;
       } finally {
+        if (lastResult) {
+          applyResultToSimple(lastResult);
+          applyResultToPro(lastResult);
+          showSimple();
+        }
         setLoading(false);
       }
     }
 
     analyzeBtn.addEventListener("click", () => {
-      callRacemeta();
+      handleAnalyze(questionInput.value);
     });
 
     questionInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
         e.preventDefault();
-        callRacemeta();
+        handleAnalyze(questionInput.value);
       }
     });
 
-    document.querySelectorAll(".chip").forEach((chip) => {
-      chip.addEventListener("click", () => {
-        questionInput.value = chip.getAttribute("data-example");
-        questionInput.focus();
+    document.querySelectorAll(".example-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        const example = e.currentTarget.getAttribute("data-example") || "";
+        questionInput.value = example;
+        handleAnalyze(example);
       });
     });
 
-    contextToggle.addEventListener("click", () => {
-      const visible = contextBlock.classList.toggle("visible");
-      contextToggle.textContent = visible
-        ? "Hide context block"
-        : "Show context block";
+    viewSimpleBtn.addEventListener("click", showSimple);
+    viewProBtn.addEventListener("click", showPro);
+    simpleToProBtn.addEventListener("click", showPro);
+    newAnalysisBtn.addEventListener("click", () => {
+      questionInput.value = "";
+      showAsk();
     });
 
-    copyTakeBtn.addEventListener("click", async () => {
-      if (!lastVerdict) return;
-      const toCopy = lastTakeLine || lastVerdict;
-      try {
-        await navigator.clipboard.writeText(toCopy);
-        copyTakeBtn.textContent = "Copied";
-        setTimeout(() => {
-          copyTakeBtn.textContent = "Copy verdict";
-        }, 1200);
-      } catch {
-        // ignore
-      }
-    });
+    // initial
+    showAsk();
   </script>
 </body>
 </html>
-
-
-
