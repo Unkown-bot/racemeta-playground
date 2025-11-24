@@ -528,11 +528,86 @@
       };
     }
 
-    function mapBackendToResult(question, backendData) {
+         function mapBackendToResult(question, backendData) {
+      if (!backendData) {
+        return mockResult();
+      }
+
+      // Detect if backend is already returning the new structured shape
+      const hasStructured =
+        backendData.summary ||
+        backendData.race_context ||
+        backendData.reasoning ||
+        backendData.recommended_strategy;
+
+      const rcFromPrompt = parsePrompt(question);
+
+      if (hasStructured) {
+        // --- NEW PATH: structured backend response ---
+        const verdictText =
+          backendData.summary ||
+          backendData.verdict ||
+          "No summary text returned from the backend.";
+
+        const verdictTypeExplicit =
+          backendData.verdict_type || backendData.verdict_type_label;
+        const verdictType =
+          verdictTypeExplicit || classifyVerdict(verdictText);
+
+        const backendRC = backendData.race_context || {};
+
+        const raceContext = {
+          driver: backendRC.driver || rcFromPrompt.driver,
+          race: backendRC.race || rcFromPrompt.race,
+          lap:
+            backendRC.lap !== undefined && backendRC.lap !== null
+              ? backendRC.lap
+              : rcFromPrompt.lap,
+          position: backendRC.position || rcFromPrompt.position,
+          label:
+            backendRC.label ||
+            rcFromPrompt.label ||
+            question.slice(0, 80) + (question.length > 80 ? "…" : "")
+        };
+
+        let reasoning = Array.isArray(backendData.reasoning)
+          ? backendData.reasoning.filter(Boolean)
+          : [];
+
+        if (!reasoning.length && backendData.context) {
+          // Back-compat if the model still sends one big context string
+          reasoning = backendData.context
+            .split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean);
+        }
+
+        if (!reasoning.length) {
+          reasoning = [
+            "Backend did not yet return detailed reasoning, only a verdict text."
+          ];
+        }
+
+        return {
+          source: "backend",
+          summary: verdictText,
+          verdictType,
+          confidence: backendData.confidence || 80,
+          reasoning,
+          altStrategy: backendData.recommended_strategy || null,
+          raceContext,
+          // keep metrics on result so we can wire performance cards later
+          metrics: backendData.metrics || null
+        };
+      }
+
+      // --- OLD PATH: legacy backend shape (verdict + context text only) ---
+
       const verdictText =
         (backendData && backendData.verdict) ||
         "No explicit verdict text returned from the backend.";
-      const contextText = backendData && backendData.context ? backendData.context : "";
+      const contextText =
+        backendData && backendData.context ? backendData.context : "";
 
       let altStrategy = null;
       let reasoning = [];
@@ -563,7 +638,7 @@
         ];
       }
 
-      const rc = parsePrompt(question);
+      const rc = rcFromPrompt;
 
       return {
         source: "backend",
@@ -573,8 +648,10 @@
         reasoning,
         altStrategy,
         raceContext: rc,
+        metrics: null
       };
     }
+
 
     function mockResult() {
       return {
