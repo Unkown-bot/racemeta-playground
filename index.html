@@ -2,25 +2,27 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>RACEMETA • F1 Strategy Agent</title>
+  <title>RaceMeta – F1 Strategy Agent</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #050711;
-      --bg-elevated: #0c101e;
-      --bg-elevated-soft: #121729;
-      --accent: #ff3355;
-      --accent-soft: rgba(255, 51, 85, 0.16);
-      --accent-green: #33ff99;
-      --text: #f7f7ff;
-      --text-soft: #a2a6c3;
-      --border-subtle: #272b3f;
-      --shadow-soft: 0 24px 60px rgba(0,0,0,0.65);
-      --radius-lg: 20px;
+      --bg: #050712;
+      --bg-alt: #0b0f1f;
+      --card: #101426;
+      --card-soft: #151a30;
+      --accent: #ff4b9a;
+      --accent-soft: rgba(255, 75, 154, 0.16);
+      --accent-alt: #ffb347;
+      --text: #f7f9ff;
+      --muted: #9aa3c3;
+      --danger: #ff5c7a;
+      --border-subtle: #262b45;
+      --radius-lg: 18px;
+      --radius-md: 12px;
       --radius-pill: 999px;
+      --shadow-lg: 0 32px 70px rgba(0, 0, 0, 0.7);
+      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
+        "Inter", Arial, sans-serif;
     }
 
     * {
@@ -30,565 +32,634 @@
     body {
       margin: 0;
       min-height: 100vh;
-      background: radial-gradient(circle at top, #151a33 0%, #050711 55%, #02030a 100%);
+      font-family: var(--font-main);
+      background: radial-gradient(circle at top, #1b2550 0, #050712 55%);
       color: var(--text);
-      font-family: "Space Grotesk", system-ui, -apple-system, BlinkMacSystemFont, sans-serif;
       display: flex;
-      align-items: stretch;
+      align-items: flex-start;
       justify-content: center;
+      padding: 32px 16px 40px;
     }
 
-    .page {
+    .shell {
       width: 100%;
-      max-width: 1120px;
-      padding: 32px 20px 40px;
-      margin: 0 auto;
-      display: flex;
-      flex-direction: column;
-      gap: 24px;
+      max-width: 1180px;
     }
 
-    header {
+    /* Header */
+
+    .header-row {
       display: flex;
-      justify-content: space-between;
       align-items: center;
+      justify-content: space-between;
       gap: 16px;
+      margin-bottom: 24px;
     }
 
-    .brand-block {
+    .brand {
       display: flex;
       flex-direction: column;
       gap: 6px;
     }
 
-    .logo-row {
+    .brand-main {
       display: flex;
       align-items: center;
       gap: 10px;
-    }
-
-    .logo-mark {
-      width: 26px;
-      height: 26px;
-      border-radius: 8px;
-      background: radial-gradient(circle at 0 0, #ff9e40, #ff3355 55%, #7a2bff 100%);
-      box-shadow: 0 0 0 1px rgba(255,255,255,0.08);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      font-weight: 700;
-    }
-
-    .title-text {
-      font-size: 24px;
       font-weight: 600;
-      letter-spacing: 0.12em;
-    }
-
-    .title-pill {
-      font-size: 11px;
-      padding: 3px 9px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(255,255,255,0.12);
+      font-size: 20px;
+      letter-spacing: 0.08em;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-soft);
     }
 
-    .subtitle {
+    .brand-main .logo-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 10px;
+      background: radial-gradient(circle at 25% 20%, #ffe6f4 0, #ff4b9a 40%, #a918ff 100%);
+      box-shadow: 0 0 18px rgba(255, 75, 154, 0.8);
+    }
+
+    .brand-tagline {
       font-size: 13px;
-      color: var(--text-soft);
-      max-width: 520px;
+      color: var(--muted);
+      max-width: 560px;
     }
 
     .status-pill {
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(0,0,0,0.35);
-      background: linear-gradient(90deg, rgba(51,255,153,0.12), rgba(110,192,255,0.16));
-      padding: 8px 14px;
-      font-size: 11px;
-      text-transform: uppercase;
-      letter-spacing: 0.16em;
       display: inline-flex;
       align-items: center;
       gap: 8px;
-      color: var(--text-soft);
-    }
-
-    .status-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: var(--accent-green);
-      box-shadow: 0 0 8px rgba(51,255,153,0.8);
-    }
-
-    main {
-      display: grid;
-      grid-template-columns: minmax(0, 1.1fr) minmax(0, 1.1fr);
-      gap: 18px;
-      align-items: stretch;
-    }
-
-    .panel {
-      background: linear-gradient(145deg, rgba(255,255,255,0.02), rgba(8,12,30,0.95));
-      border-radius: var(--radius-lg);
-      border: 1px solid var(--border-subtle);
-      padding: 18px 18px 16px;
-      box-shadow: var(--shadow-soft);
-      position: relative;
-      overflow: hidden;
-    }
-
-    .panel::before {
-      content:"";
-      position:absolute;
-      inset:0;
-      background: radial-gradient(circle at top left, rgba(115,116,255,0.16), transparent 55%);
-      pointer-events:none;
-      opacity:0.9;
-    }
-
-    .panel-inner {
-      position: relative;
-      z-index: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 14px;
-      height: 100%;
-    }
-
-    .panel-header-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-    }
-
-    .panel-label {
+      padding: 6px 12px;
+      border-radius: var(--radius-pill);
+      background: rgba(6, 179, 110, 0.1);
+      border: 1px solid rgba(24, 198, 131, 0.45);
       font-size: 11px;
       text-transform: uppercase;
-      letter-spacing: 0.16em;
-      color: var(--text-soft);
-    }
-
-    .chip-mini {
-      padding: 4px 9px;
-      border-radius: var(--radius-pill);
-      border: 1px solid rgba(255,255,255,0.09);
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .input-card {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-
-    .input-wrapper {
-      position: relative;
-    }
-
-    textarea {
-      width: 100%;
-      min-height: 150px;
-      resize: vertical;
-      border-radius: 16px;
-      border: 1px solid rgba(255,255,255,0.08);
-      background: rgba(3,6,20,0.96);
-      color: var(--text);
-      padding: 14px 14px 46px;
-      font: 400 14px/1.5 "Space Grotesk", system-ui, sans-serif;
-      outline: none;
-      box-shadow: inset 0 0 0 1px rgba(0,0,0,0.4);
-    }
-
-    textarea::placeholder {
-      color: rgba(162,166,195,0.6);
-    }
-
-    .helper-row {
-      font-size: 11px;
-      color: var(--text-soft);
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 8px;
-    }
-
-    .helper-link {
-      color: var(--accent-green);
-      cursor: pointer;
-      text-decoration: underline dotted;
-    }
-
-    .cta-row {
-      position: absolute;
-      bottom: 10px;
-      right: 10px;
-      display: flex;
-      align-items: center;
-      gap: 8px;
-    }
-
-    button {
-      border: none;
-      cursor: pointer;
-      font-family: inherit;
-    }
-
-    #analyze-btn {
-      padding: 9px 22px;
-      border-radius: var(--radius-pill);
-      background: radial-gradient(circle at 0 0, #ff9e40 0%, #ff3355 35%, #7a2bff 100%);
-      color: #04030b;
-      font-size: 13px;
-      font-weight: 600;
-      text-transform: uppercase;
-      letter-spacing: 0.14em;
-      display: inline-flex;
-      align-items: center;
-      gap: 8px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7);
-      transition: transform 0.16s ease, box-shadow 0.16s ease, filter 0.16s ease;
-    }
-
-    #analyze-btn:hover {
-      transform: translateY(-1px);
-      filter: brightness(1.05);
-      box-shadow: 0 16px 40px rgba(0,0,0,0.85);
-    }
-
-    #analyze-btn:active {
-      transform: translateY(1px) scale(0.99);
-      box-shadow: 0 6px 20px rgba(0,0,0,0.7);
-    }
-
-    .btn-label-dot {
-      width: 8px;
-      height: 8px;
-      border-radius: 999px;
-      background: #04030b;
-    }
-
-    .loading-dots {
-      font-size: 11px;
-      letter-spacing: 0.18em;
-      color: var(--text-soft);
-      opacity: 0;
-      transform: translateY(2px);
-      transition: opacity 0.15s ease;
-    }
-
-    .loading-dots.visible {
-      opacity: 1;
-    }
-
-    .examples-row {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-      margin-top: 4px;
-    }
-
-    .example-pill {
-      font-size: 11px;
-      padding: 4px 9px;
-      border-radius: var(--radius-pill);
-      background: rgba(26,32,66,0.96);
-      border: 1px solid rgba(255,255,255,0.06);
-      color: var(--text-soft);
-      cursor: pointer;
+      letter-spacing: 0.12em;
+      color: #9be7c4;
       white-space: nowrap;
     }
 
-    /* Verdict panel */
+    .status-pill-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #18c683;
+      box-shadow: 0 0 12px rgba(24, 198, 131, 0.9);
+    }
 
-    .verdict-body {
-      flex: 1;
+    /* Layout */
+
+    .layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.05fr) minmax(0, 1.1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 940px) {
+      .layout {
+        grid-template-columns: minmax(0, 1fr);
+      }
+    }
+
+    .panel {
+      background: linear-gradient(135deg, rgba(255, 255, 255, 0.02), transparent);
+      border-radius: var(--radius-lg);
+      border: 1px solid var(--border-subtle);
+      box-shadow: var(--shadow-lg);
+      padding: 18px 18px 16px;
+      position: relative;
+      backdrop-filter: blur(16px);
+    }
+
+    .panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 12px;
+      gap: 8px;
+    }
+
+    .panel-title {
+      font-size: 12px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--muted);
+    }
+
+    .panel-chip {
+      padding: 4px 10px;
+      border-radius: var(--radius-pill);
+      background: rgba(135, 206, 255, 0.08);
+      border: 1px solid rgba(135, 206, 255, 0.28);
+      font-size: 11px;
+      color: #b9d8ff;
+      white-space: nowrap;
+    }
+
+    /* Question side */
+
+    .prompt-card {
+      background: var(--card);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 14px 12px;
       display: flex;
       flex-direction: column;
       gap: 10px;
-      overflow: hidden;
     }
 
-    .verdict-meta {
-      font-size: 11px;
-      color: var(--text-soft);
+    .prompt-row {
       display: flex;
+      align-items: stretch;
+      gap: 10px;
+    }
+
+    textarea {
+      flex: 1;
+      resize: none;
+      min-height: 100px;
+      border-radius: 10px;
+      border: 1px solid #262b45;
+      background: radial-gradient(circle at top left, #1a2146 0, #050712 55%);
+      color: var(--text);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: var(--font-main);
+      outline: none;
+      transition: border-color 0.18s ease, box-shadow 0.18s ease, background 0.18s ease;
+    }
+
+    textarea::placeholder {
+      color: #5f6686;
+    }
+
+    textarea:focus {
+      border-color: rgba(255, 75, 154, 0.9);
+      box-shadow: 0 0 0 1px rgba(255, 75, 154, 0.3);
+      background: radial-gradient(circle at top left, #222a5a 0, #060819 55%);
+    }
+
+    .btn-primary {
+      align-self: stretch;
+      padding: 0 20px;
+      border-radius: 12px;
+      border: none;
+      background: radial-gradient(circle at 20% 0%, #ffe7f9 0, #ff4b9a 40%, #ffb347 100%);
+      color: #170315;
+      font-weight: 600;
+      font-size: 13px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      cursor: pointer;
+      box-shadow: 0 15px 30px rgba(255, 75, 154, 0.5);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      transition: transform 0.12s ease, box-shadow 0.12s ease, filter 0.12s ease;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 19px 36px rgba(255, 75, 154, 0.6);
+      filter: brightness(1.05);
+    }
+
+    .btn-primary:active {
+      transform: translateY(1px);
+      box-shadow: 0 10px 20px rgba(255, 75, 154, 0.45);
+      filter: brightness(0.96);
+    }
+
+    .btn-primary[disabled] {
+      opacity: 0.65;
+      cursor: default;
+      transform: none;
+      box-shadow: 0 8px 16px rgba(0, 0, 0, 0.5);
+    }
+
+    .prompt-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px 12px;
+      align-items: center;
       justify-content: space-between;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .chips-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .chip {
+      padding: 6px 11px;
+      border-radius: var(--radius-pill);
+      background: rgba(22, 29, 61, 0.9);
+      color: #bcc6f7;
+      border: 1px solid #232b52;
+      font-size: 11px;
+      cursor: pointer;
+      transition: background 0.16s ease, transform 0.08s ease, border-color 0.16s ease;
+    }
+
+    .chip:hover {
+      background: rgba(37, 47, 96, 1);
+      border-color: rgba(255, 75, 154, 0.5);
+      transform: translateY(-1px);
+    }
+
+    /* Verdict side */
+
+    .verdict-card {
+      background: var(--card-soft);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--border-subtle);
+      padding: 14px 14px 12px;
+      min-height: 140px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .badge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 11px;
+      color: var(--muted);
+    }
+
+    .badge-row-left {
+      display: flex;
+      align-items: center;
       gap: 8px;
       flex-wrap: wrap;
     }
 
-    .verdict-main {
-      background: var(--bg-elevated-soft);
-      border-radius: 14px;
-      border: 1px solid rgba(255,255,255,0.06);
-      padding: 12px 14px 12px;
-      max-height: 260px;
-      overflow: auto;
-      font-size: 13px;
-      line-height: 1.55;
-      white-space: pre-wrap;
-    }
-
-    .verdict-main strong {
-      color: var(--accent-green);
-      font-weight: 600;
-    }
-
-    .verdict-main::-webkit-scrollbar {
-      width: 6px;
-    }
-    .verdict-main::-webkit-scrollbar-track {
-      background: transparent;
-    }
-    .verdict-main::-webkit-scrollbar-thumb {
-      background: rgba(255,255,255,0.12);
-      border-radius: 999px;
-    }
-
-    .verdict-footer-row {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      gap: 10px;
-      font-size: 11px;
-      color: var(--text-soft);
-    }
-
-    .pill-compact {
+    .badge-pill {
+      padding: 4px 9px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(255,255,255,0.08);
-      padding: 4px 8px;
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .pill-online {
+      border-color: rgba(24, 198, 131, 0.55);
+      color: #9be7c4;
+      background: rgba(24, 198, 131, 0.07);
+    }
+
+    .pill-take-copy {
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .pill-take-copy:hover {
+      border-color: rgba(255, 179, 71, 0.7);
+      color: #ffd69c;
+    }
+
+    .verdict-body {
+      font-size: 13px;
+      line-height: 1.35;
+      white-space: pre-line;
+      color: #f3f5ff;
+    }
+
+    .verdict-placeholder {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .verdict-error {
+      border-radius: 10px;
+      background: rgba(255, 92, 122, 0.1);
+      border: 1px solid rgba(255, 92, 122, 0.5);
+      color: #ffc7d0;
+      font-size: 12px;
+      padding: 7px 10px;
+    }
+
+    .loading-row {
       display: inline-flex;
       align-items: center;
-      gap: 5px;
+      gap: 8px;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .spinner {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      border: 2px solid rgba(175, 186, 247, 0.28);
+      border-top-color: rgba(255, 75, 154, 0.95);
+      animation: spin 0.75s linear infinite;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .context-toggle {
+      font-size: 11px;
+      color: #97a0d5;
       cursor: pointer;
-      background: rgba(4,6,20,0.9);
+      text-decoration: underline;
     }
 
-    .pill-compact span {
+    .context-block {
+      margin-top: 6px;
+      padding: 8px;
+      border-radius: 8px;
+      background: rgba(5, 9, 24, 0.85);
+      border: 1px dashed #282f55;
       font-size: 11px;
-    }
-
-    .error-banner {
-      font-size: 11px;
-      color: #ff9f9f;
-      background: rgba(147, 40, 40, 0.24);
-      border-radius: 10px;
-      padding: 6px 8px;
+      color: #a4afd8;
+      max-height: 220px;
+      overflow: auto;
       display: none;
+      white-space: pre-line;
     }
 
-    .error-banner.visible {
+    .context-block.visible {
       display: block;
     }
 
-    @media (max-width: 880px) {
-      main {
-        grid-template-columns: minmax(0, 1fr);
-      }
-      .panel {
-        padding: 16px 14px 14px;
-      }
-      textarea {
-        min-height: 140px;
-      }
+    .tip-row {
+      margin-top: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .tip-row span {
+      opacity: 0.9;
+    }
+
+    /* Small helpers */
+
+    .ghost {
+      opacity: 0.32;
     }
   </style>
 </head>
 <body>
-  <div class="page">
-    <header>
-      <div class="brand-block">
-        <div class="logo-row">
-          <div class="logo-mark">R</div>
-          <div class="title-text">RACEMETA</div>
-          <div class="title-pill">F1 STRATEGY AGENT</div>
+  <div class="shell">
+    <!-- header -->
+    <div class="header-row">
+      <div class="brand">
+        <div class="brand-main">
+          <div class="logo-dot"></div>
+          <span>RACEMETA</span>
+          <span style="font-size:11px; padding:2px 7px; border-radius:999px; border:1px solid rgba(255,255,255,0.14); color:#c5ccff;">
+            F1 STRATEGY AGENT
+          </span>
         </div>
-        <div class="subtitle">
+        <div class="brand-tagline">
           Ask about any stint, pit stop or tyre call. RaceMeta pulls real OpenF1 data and answers like a pit-wall strategist.
         </div>
       </div>
+
       <div class="status-pill">
-        <div class="status-dot"></div>
+        <div class="status-pill-dot"></div>
         LIVE BACKEND · OPENF1 + GPT
       </div>
-    </header>
+    </div>
 
-    <main>
-      <!-- INPUT PANEL -->
-      <section class="panel">
-        <div class="panel-inner">
-          <div class="panel-header-row">
-            <div class="panel-label">Question</div>
-            <div class="chip-mini">Latest race by default · mention track / lap for more control</div>
+    <!-- main layout -->
+    <div class="layout">
+      <!-- left: question -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Question</div>
+          <div class="panel-chip">Latest race by default – mention track / lap for control</div>
+        </div>
+
+        <div class="prompt-card">
+          <div class="prompt-row">
+            <textarea
+              id="questionInput"
+              placeholder='Example: "Did Ferrari overcut too long versus Piastri in Vegas?"'
+            ></textarea>
+            <button id="analyzeBtn" class="btn-primary">
+              Analyze
+            </button>
           </div>
 
-          <div class="input-card">
-            <div class="input-wrapper">
-              <textarea id="question-input" spellcheck="false"
-                placeholder="e.g. “Should Charles have covered the early stop in Vegas?” or “Was it right to leave Lando out for the overcut at Monza?”"></textarea>
+          <div class="prompt-meta">
+            <span>RaceMeta assumes the latest race for that driver. Mention lap and track for extra precision.</span>
+          </div>
 
-              <div class="cta-row">
-                <div id="loading-indicator" class="loading-dots">ANALYSING…</div>
-                <button id="analyze-btn">
-                  <span class="btn-label-dot"></span>
-                  ANALYZE
-                </button>
-              </div>
-            </div>
-
-            <div class="helper-row">
-              <span>RaceMeta assumes the latest race for that driver. You can mention laps and tracks too.</span>
-            </div>
-
-            <div class="examples-row">
-              <button class="example-pill" data-example="Was it right to pit Leclerc on lap 16 in Bahrain?">
-                Why Leclerc boxed lap 16 in Bahrain?
-              </button>
-              <button class="example-pill" data-example="Should Mercedes have left Hamilton out or pit under the SC in Brazil?">
-                Hamilton vs SC pit in Brazil
-              </button>
-              <button class="example-pill" data-example="Did McLaren over-cut too long with Piastri in Vegas?">
-                Piastri overcut in Vegas
-              </button>
-            </div>
+          <div class="chips-row">
+            <button class="chip" data-example="Was pitting Leclerc on lap 16 in Bahrain actually optimal?">
+              Leclerc box lap 16 in Bahrain
+            </button>
+            <button class="chip" data-example="Should Red Bull have extended Max's first stint in Brazil?">
+              Max first stint in Brazil
+            </button>
+            <button class="chip" data-example="Did Ferrari overcut too long versus Piastri in Vegas?">
+              Ferrari vs Piastri in Vegas
+            </button>
           </div>
         </div>
-      </section>
+      </div>
 
-      <!-- VERDICT PANEL -->
-      <section class="panel">
-        <div class="panel-inner">
-          <div class="panel-header-row">
-            <div class="panel-label">RACEMETA VERDICT</div>
-            <div class="chip-mini" id="agent-status-chip">AGENT ONLINE</div>
-          </div>
-
-          <div class="verdict-body">
-            <div class="verdict-meta">
-              <span id="context-mini">Ask a question to see the tyre story & strategy breakdown.</span>
-              <span>Output is optimised for X / Threads replies — punchy but high-signal.</span>
-            </div>
-
-            <div id="error-banner" class="error-banner"></div>
-
-            <div id="verdict-output" class="verdict-main">
-Initialise the agent by asking about a pit call, tyre choice or stint timing.
-
-Good examples:
-- “Was pitting Leclerc on lap 16 in Bahrain actually optimal?”
-- “Should Red Bull have extended Max’s first stint in Brazil?”
-- “Did Ferrari overcut too long versus Piastri in Vegas?”
-            </div>
-
-            <div class="verdict-footer-row">
-              <span>Tip: the <strong>Take</strong> line is usually ready to paste into a tweet.</span>
-              <button id="copy-btn" class="pill-compact">
-                <span>Copy verdict</span>
-              </button>
-            </div>
-          </div>
+      <!-- right: verdict -->
+      <div class="panel">
+        <div class="panel-header">
+          <div class="panel-title">Racemeta Verdict</div>
+          <div class="panel-chip ghost">Output is optimised for X / Threads replies — punchy but high-signal.</div>
         </div>
-      </section>
-    </main>
+
+        <div class="verdict-card">
+          <div class="badge-row">
+            <div class="badge-row-left">
+              <div class="badge-pill pill-online">Agent online</div>
+              <div class="badge-pill">Uses OpenF1 session & stint data</div>
+            </div>
+            <div class="badge-pill pill-take-copy" id="copyTakeBtn" title="Copy verdict for a tweet">
+              Copy verdict
+            </div>
+          </div>
+
+          <div id="verdictArea" class="verdict-body verdict-placeholder">
+            Initialise the agent by asking about a pit call, tyre choice or stint timing.
+            <br /><br />
+            Good examples:
+            <br />– "Was pitting Leclerc on lap 16 in Bahrain actually optimal?"
+            <br />– "Should Red Bull have extended Max's first stint in Brazil?"
+            <br />– "Did Ferrari overcut too long versus Piastri in Vegas?"
+          </div>
+
+          <div id="errorArea" class="verdict-error" style="display:none;"></div>
+
+          <div class="tip-row">
+            <span id="statusText">Tip: the Take line is usually ready to paste into a tweet.</span>
+            <span class="context-toggle" id="contextToggle" style="display:none;">Show context block</span>
+          </div>
+
+          <div id="contextBlock" class="context-block"></div>
+        </div>
+      </div>
+    </div>
   </div>
 
   <script>
-    const API_URL = "https://racemeta-backend-production.up.railway.app/analyze_latest";
+    const BACKEND_URL =
+      "https://racemeta-backend-production.up.railway.app/analyze_latest";
 
-    const questionInput = document.getElementById("question-input");
-    const analyzeBtn = document.getElementById("analyze-btn");
-    const loadingIndicator = document.getElementById("loading-indicator");
-    const verdictOutput = document.getElementById("verdict-output");
-    const contextMini = document.getElementById("context-mini");
-    const errorBanner = document.getElementById("error-banner");
-    const copyBtn = document.getElementById("copy-btn");
-    const examplePills = document.querySelectorAll(".example-pill");
+    const questionInput = document.getElementById("questionInput");
+    const analyzeBtn = document.getElementById("analyzeBtn");
+    const verdictArea = document.getElementById("verdictArea");
+    const errorArea = document.getElementById("errorArea");
+    const statusText = document.getElementById("statusText");
+    const contextToggle = document.getElementById("contextToggle");
+    const contextBlock = document.getElementById("contextBlock");
+    const copyTakeBtn = document.getElementById("copyTakeBtn");
+
+    let lastVerdict = "";
+    let lastTakeLine = "";
+    let loading = false;
 
     function setLoading(isLoading) {
+      loading = isLoading;
+      analyzeBtn.disabled = isLoading;
+
       if (isLoading) {
-        loadingIndicator.classList.add("visible");
-        analyzeBtn.disabled = true;
-        analyzeBtn.style.opacity = "0.7";
+        verdictArea.textContent = "";
+        errorArea.style.display = "none";
+
+        const row = document.createElement("div");
+        row.className = "loading-row";
+        row.innerHTML = '<div class="spinner"></div><span>Crunching stints, tyres and track data…</span>';
+        verdictArea.appendChild(row);
+
+        statusText.textContent = "Talking to the RaceMeta backend…";
       } else {
-        loadingIndicator.classList.remove("visible");
-        analyzeBtn.disabled = false;
-        analyzeBtn.style.opacity = "1";
+        if (!lastVerdict) {
+          statusText.textContent =
+            "Tip: the Take line is usually ready to paste into a tweet.";
+        }
       }
     }
 
-    async function callRaceMeta() {
+    async function callRacemeta() {
       const question = questionInput.value.trim();
-      if (!question) return;
+      if (!question) {
+        questionInput.focus();
+        return;
+      }
 
       setLoading(true);
-      errorBanner.classList.remove("visible");
-      errorBanner.textContent = "";
+      contextBlock.classList.remove("visible");
+      contextToggle.style.display = "none";
 
       try {
-        const res = await fetch(API_URL, {
+        const res = await fetch(BACKEND_URL, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question })
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ question }),
         });
 
         if (!res.ok) {
-          const text = await res.text();
-          throw new Error(text || `HTTP ${res.status}`);
+          const msg = `Something went wrong talking to the backend (HTTP ${res.status}). Try again or tweak the question.`;
+          errorArea.textContent = msg;
+          errorArea.style.display = "block";
+          verdictArea.textContent = "";
+          lastVerdict = "";
+          lastTakeLine = "";
+          statusText.textContent =
+            "If this keeps happening, restart the Railway service and check its logs.";
+          return;
         }
 
         const data = await res.json();
 
-        if (data.error) {
-          throw new Error(data.error);
+        errorArea.style.display = "none";
+        verdictArea.textContent = data.verdict || "(No verdict returned.)";
+        lastVerdict = data.verdict || "";
+
+        // Extract Take line for quick copy (if present)
+        const match = /Take:\s*(.+)$/im.exec(lastVerdict);
+        lastTakeLine = match ? match[1].trim() : lastVerdict;
+
+        if (data.context) {
+          contextBlock.textContent = data.context;
+          contextToggle.style.display = "inline";
+          contextToggle.textContent = "Show context block";
+        } else {
+          contextBlock.textContent = "";
+          contextToggle.style.display = "none";
         }
 
-        verdictOutput.textContent = data.verdict || "No verdict returned.";
-        contextMini.textContent = data.context
-          ? `Context: ${data.context.split("\\n")[0]}`
-          : "Context loaded from OpenF1.";
-
+        statusText.textContent = "Verdict ready – tweak the question to probe different laps or compounds.";
       } catch (err) {
         console.error(err);
-        errorBanner.textContent = "Something went wrong talking to the backend. Try again in a moment or tweak your question.";
-        errorBanner.classList.add("visible");
+        errorArea.textContent =
+          "Network error. Check your internet connection or that the Railway backend is awake.";
+        errorArea.style.display = "block";
+        verdictArea.textContent = "";
+        lastVerdict = "";
+        lastTakeLine = "";
+        statusText.textContent =
+          "If you just deployed, it can take a few seconds for the backend to wake up.";
       } finally {
         setLoading(false);
       }
     }
 
-    analyzeBtn.addEventListener("click", callRaceMeta);
+    analyzeBtn.addEventListener("click", () => {
+      callRacemeta();
+    });
 
     questionInput.addEventListener("keydown", (e) => {
       if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-        callRaceMeta();
+        e.preventDefault();
+        callRacemeta();
       }
     });
 
-    examplePills.forEach(pill => {
-      pill.addEventListener("click", () => {
-        const ex = pill.getAttribute("data-example");
-        questionInput.value = ex;
+    document.querySelectorAll(".chip").forEach((chip) => {
+      chip.addEventListener("click", () => {
+        questionInput.value = chip.getAttribute("data-example");
         questionInput.focus();
       });
     });
 
-    copyBtn.addEventListener("click", () => {
-      const text = verdictOutput.textContent || "";
-      if (!text.trim()) return;
-      navigator.clipboard.writeText(text).then(() => {
-        copyBtn.querySelector("span").textContent = "Copied";
+    contextToggle.addEventListener("click", () => {
+      const visible = contextBlock.classList.toggle("visible");
+      contextToggle.textContent = visible
+        ? "Hide context block"
+        : "Show context block";
+    });
+
+    copyTakeBtn.addEventListener("click", async () => {
+      if (!lastVerdict) return;
+      const toCopy = lastTakeLine || lastVerdict;
+      try {
+        await navigator.clipboard.writeText(toCopy);
+        copyTakeBtn.textContent = "Copied";
         setTimeout(() => {
-          copyBtn.querySelector("span").textContent = "Copy verdict";
-        }, 1400);
-      });
+          copyTakeBtn.textContent = "Copy verdict";
+        }, 1300);
+      } catch {
+        // ignore
+      }
     });
   </script>
 </body>
