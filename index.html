@@ -4,22 +4,34 @@
   <meta charset="UTF-8" />
   <title>RaceMeta – F1 Strategy Agent</title>
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <!-- Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+
   <style>
     :root {
-      --bg: #f3f4f6;
-      --card: #ffffff;
-      --border: #e2e4ea;
-      --border-soft: #edf0f7;
-      --accent: #2563eb;
-      --accent-soft: rgba(37, 99, 235, 0.08);
-      --accent-strong: rgba(37, 99, 235, 0.16);
-      --text: #111827;
-      --muted: #6b7280;
-      --radius-lg: 16px;
-      --radius-md: 10px;
+      --bg: #020617;              /* overall background */
+      --bg-gradient-top: #0b1120;
+      --card: #020617;
+      --card-elevated: #020617;
+      --card-inner: #020617;
+      --border: #1f2933;
+      --border-soft: #111827;
+      --accent: #22d3ee;          /* cyan accent */
+      --accent-soft: rgba(34, 211, 238, 0.16);
+      --accent-strong: rgba(34, 211, 238, 0.28);
+      --text: #e5e7eb;
+      --muted: #9ca3af;
+      --danger-bg: #451a1a;
+      --danger-border: #fecaca;
+      --danger-text: #fecaca;
+      --radius-lg: 18px;
+      --radius-md: 12px;
       --radius-pill: 999px;
-      --font-main: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Inter", Arial, sans-serif;
+      --font-main: "Inter", system-ui, -apple-system, BlinkMacSystemFont,
+        "SF Pro Text", "Segoe UI", sans-serif;
     }
 
     * {
@@ -31,7 +43,7 @@
       min-height: 100vh;
       font-family: var(--font-main);
       background:
-        radial-gradient(circle at top, rgba(37, 99, 235, 0.1) 0, transparent 50%),
+        radial-gradient(circle at top, var(--bg-gradient-top) 0, transparent 55%),
         var(--bg);
       color: var(--text);
       display: flex;
@@ -51,27 +63,28 @@
       align-items: center;
       justify-content: space-between;
       gap: 16px;
-      margin-bottom: 20px;
-      padding: 8px 12px;
+      margin-bottom: 24px;
+      padding: 10px 16px;
       border-radius: 999px;
-      background: rgba(255, 255, 255, 0.9);
-      border: 1px solid rgba(226, 232, 240, 0.9);
-      box-shadow: 0 6px 16px rgba(15, 23, 42, 0.05);
+      background: rgba(15, 23, 42, 0.96);
+      border: 1px solid #1e293b;
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(18px);
     }
 
     .brand {
       display: flex;
       flex-direction: column;
-      gap: 2px;
+      gap: 4px;
     }
 
     .brand-main {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       font-weight: 600;
       font-size: 17px;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
     }
 
@@ -79,8 +92,18 @@
       width: 18px;
       height: 18px;
       border-radius: 7px;
-      background: var(--accent);
-      box-shadow: 0 0 0 3px var(--accent-soft);
+      background: radial-gradient(circle at 25% 20%, #e0f2fe 0, #22d3ee 40%, #0369a1 100%);
+      box-shadow: 0 0 0 3px rgba(34, 211, 238, 0.4);
+    }
+
+    .brand-badge {
+      font-size: 11px;
+      padding: 3px 9px;
+      border-radius: 999px;
+      border: 1px solid rgba(148, 163, 184, 0.6);
+      color: #cbd5f5;
+      text-transform: uppercase;
+      letter-spacing: 0.16em;
     }
 
     .brand-tagline {
@@ -92,7 +115,7 @@
     .status-compact {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 7px;
       font-size: 11px;
       color: var(--muted);
       white-space: nowrap;
@@ -103,7 +126,7 @@
       height: 9px;
       border-radius: 999px;
       background: #22c55e;
-      box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.18);
+      box-shadow: 0 0 0 4px rgba(34, 197, 94, 0.3);
     }
 
     /* Layout */
@@ -111,16 +134,15 @@
     .stack {
       display: flex;
       flex-direction: column;
-      gap: 16px;
-      margin-top: 12px;
+      gap: 18px;
     }
 
     .card {
-      background: var(--card);
+      background: radial-gradient(circle at top left, #020617 0, #020617 55%);
       border-radius: var(--radius-lg);
-      border: 1px solid var(--border);
+      border: 1px solid var(--border-soft);
       padding: 16px 16px 14px;
-      box-shadow: 0 10px 24px rgba(15, 23, 42, 0.05);
+      box-shadow: 0 18px 40px rgba(15, 23, 42, 0.65);
     }
 
     .card-header {
@@ -132,19 +154,20 @@
     }
 
     .card-title {
-      font-size: 12px;
-      letter-spacing: 0.16em;
+      font-size: 11px;
+      letter-spacing: 0.18em;
       text-transform: uppercase;
       color: var(--muted);
+      font-weight: 600;
     }
 
     .card-chip {
       padding: 4px 10px;
       border-radius: var(--radius-pill);
-      background: var(--accent-soft);
-      border: 1px solid rgba(37, 99, 235, 0.22);
+      background: rgba(15, 23, 42, 0.9);
+      border: 1px solid rgba(51, 65, 85, 0.9);
       font-size: 11px;
-      color: var(--accent);
+      color: #cbd5f5;
       white-space: nowrap;
     }
 
@@ -153,53 +176,55 @@
     .prompt-card-inner {
       border-radius: var(--radius-md);
       border: 1px solid var(--border-soft);
-      padding: 10px 10px 8px;
-      background: #f9fafb;
+      padding: 12px;
+      background: #020617;
       display: flex;
       flex-direction: column;
-      gap: 8px;
+      gap: 9px;
     }
 
     .prompt-row {
       display: flex;
       align-items: stretch;
-      gap: 8px;
+      gap: 10px;
     }
 
     textarea {
       flex: 1;
       resize: none;
-      min-height: 90px;
+      min-height: 96px;
       border-radius: 10px;
-      border: 1px solid var(--border);
-      background: #ffffff;
+      border: 1px solid #1f2937;
+      background: radial-gradient(circle at top left, #020617 0, #020617 70%);
       color: var(--text);
-      padding: 9px 10px;
+      padding: 9px 11px;
       font-size: 14px;
       font-family: var(--font-main);
       outline: none;
-      transition: border-color 0.16s ease, box-shadow 0.16s ease;
+      transition: border-color 0.16s ease, box-shadow 0.16s ease, background 0.16s ease;
+      line-height: 1.45;
     }
 
     textarea::placeholder {
-      color: #9ca3af;
+      color: #6b7280;
     }
 
     textarea:focus {
       border-color: var(--accent);
-      box-shadow: 0 0 0 1px rgba(37, 99, 235, 0.28);
+      box-shadow: 0 0 0 1px var(--accent-strong);
+      background: radial-gradient(circle at top left, #020617 0, #020617 65%);
     }
 
     .btn-primary {
       align-self: stretch;
-      padding: 0 16px;
-      border-radius: 10px;
+      padding: 0 18px;
+      border-radius: 11px;
       border: none;
-      background: var(--accent);
-      color: #ffffff;
+      background: linear-gradient(135deg, #38bdf8, #22d3ee);
+      color: #020617;
       font-weight: 600;
       font-size: 12px;
-      letter-spacing: 0.09em;
+      letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
       display: inline-flex;
@@ -207,25 +232,26 @@
       justify-content: center;
       white-space: nowrap;
       transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
-      box-shadow: 0 10px 18px rgba(37, 99, 235, 0.35);
+      box-shadow: 0 16px 30px rgba(15, 23, 42, 0.9);
     }
 
     .btn-primary:hover {
       filter: brightness(1.05);
       transform: translateY(-1px);
-      box-shadow: 0 14px 24px rgba(37, 99, 235, 0.4);
+      box-shadow: 0 20px 40px rgba(15, 23, 42, 0.95);
     }
 
     .btn-primary:active {
       transform: translateY(1px);
-      box-shadow: 0 8px 14px rgba(37, 99, 235, 0.3);
+      box-shadow: 0 12px 24px rgba(15, 23, 42, 0.9);
+      filter: brightness(0.97);
     }
 
     .btn-primary[disabled] {
-      opacity: 0.68;
+      opacity: 0.7;
       cursor: default;
       transform: none;
-      box-shadow: 0 8px 12px rgba(148, 163, 184, 0.4);
+      box-shadow: 0 10px 20px rgba(15, 23, 42, 0.75);
     }
 
     .prompt-meta {
@@ -236,6 +262,7 @@
       gap: 4px 10px;
       justify-content: space-between;
       margin-top: 2px;
+      line-height: 1.4;
     }
 
     .chips-row {
@@ -248,17 +275,18 @@
     .chip {
       padding: 5px 10px;
       border-radius: 999px;
-      background: #ffffff;
-      color: #4b5563;
-      border: 1px solid var(--border);
+      background: #020617;
+      color: #cbd5f5;
+      border: 1px solid #1f2937;
       font-size: 11px;
       cursor: pointer;
-      transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease;
+      transition: background 0.12s ease, border-color 0.12s ease, transform 0.08s ease, color 0.12s ease;
     }
 
     .chip:hover {
-      background: #eff6ff;
-      border-color: rgba(37, 99, 235, 0.55);
+      background: #020617;
+      border-color: var(--accent);
+      color: #e0f2fe;
       transform: translateY(-1px);
     }
 
@@ -266,22 +294,21 @@
 
     .verdict-body {
       font-size: 13px;
-      line-height: 1.5;
-      color: #111827;
+      line-height: 1.55;
+      color: #e5e7eb;
       white-space: pre-line;
     }
 
     .verdict-placeholder {
-      font-size: 13px;
       color: var(--muted);
     }
 
     .verdict-error {
       margin-top: 8px;
-      border-radius: 8px;
-      background: #fef2f2;
-      border: 1px solid #fecaca;
-      color: #b91c1c;
+      border-radius: 9px;
+      background: var(--danger-bg);
+      border: 1px solid var(--danger-border);
+      color: var(--danger-text);
       font-size: 12px;
       padding: 7px 10px;
     }
@@ -306,14 +333,14 @@
     .badge-pill {
       padding: 3px 9px;
       border-radius: 999px;
-      background: #f3f4f6;
-      border: 1px solid #e5e7eb;
+      background: #020617;
+      border: 1px solid #1f2937;
     }
 
     .pill-online {
-      background: #ecfdf3;
-      border-color: #bbf7d0;
-      color: #15803d;
+      background: rgba(34, 197, 94, 0.08);
+      border-color: rgba(34, 197, 94, 0.6);
+      color: #4ade80;
     }
 
     .pill-copy {
@@ -322,9 +349,9 @@
     }
 
     .pill-copy:hover {
-      background: #eff6ff;
-      border-color: rgba(37, 99, 235, 0.55);
-      color: #1d4ed8;
+      border-color: var(--accent);
+      color: #e0f2fe;
+      background: rgba(15, 23, 42, 0.9);
     }
 
     .loading-row {
@@ -351,13 +378,19 @@
     }
 
     .tip-row {
-      margin-top: 6px;
+      margin-top: 8px;
       font-size: 11px;
       color: var(--muted);
       display: flex;
       justify-content: space-between;
-      gap: 10px;
+      gap: 8px;
       flex-wrap: wrap;
+      line-height: 1.45;
+    }
+
+    .tip-main {
+      flex: 1 1 auto;
+      min-width: 180px;
     }
 
     .context-toggle {
@@ -365,16 +398,17 @@
       color: var(--accent);
       cursor: pointer;
       text-decoration: underline;
+      flex-shrink: 0;
     }
 
     .context-block {
       margin-top: 6px;
       padding: 8px;
       border-radius: 8px;
-      background: #f9fafb;
-      border: 1px dashed #d1d5db;
+      background: #020617;
+      border: 1px dashed #1f2937;
       font-size: 11px;
-      color: #4b5563;
+      color: #cbd5f5;
       max-height: 220px;
       overflow: auto;
       display: none;
@@ -385,35 +419,26 @@
       display: block;
     }
 
-    /* Slight structure for verdict text (optional visual aid) */
-
-    .verdict-body strong {
-      display: inline-block;
-      margin-top: 4px;
-      font-weight: 600;
-    }
-
-    .verdict-body strong:first-child {
-      margin-top: 0;
-    }
-
-    .verdict-body em {
-      font-style: normal;
-      color: var(--muted);
-    }
-
     @media (max-width: 640px) {
       .header-row {
         flex-direction: column;
         align-items: flex-start;
+        gap: 10px;
       }
+
       .prompt-row {
         flex-direction: column;
       }
+
       .btn-primary {
         align-self: flex-end;
         height: 40px;
         padding-inline: 20px;
+      }
+
+      .tip-row {
+        flex-direction: column;
+        align-items: flex-start;
       }
     }
   </style>
@@ -426,9 +451,7 @@
         <div class="brand-main">
           <div class="logo-dot"></div>
           <span>RACEMETA</span>
-          <span style="font-size:11px; padding:2px 7px; border-radius:999px; border:1px solid rgba(148,163,184,0.6); color:#4b5563;">
-            F1 STRATEGY AGENT
-          </span>
+          <span class="brand-badge">F1 STRATEGY AGENT</span>
         </div>
         <div class="brand-tagline">
           Ask about any stint, pit stop or tyre call. RaceMeta calls the strategy like a pit-wall engineer.
@@ -499,19 +522,23 @@
           </div>
 
           <div id="verdictArea" class="verdict-body verdict-placeholder">
-            Ask about a pit call, stint length or tyre choice and RaceMeta will tell you if it made sense.
-            <br /><br />
-            Good prompts:
-            <br />– "Bahrain – was pitting Leclerc on lap 16 for hards optimal?"
-            <br />– "Dry race – should Norris have covered the undercut on lap 13?"
-            <br />– "Australia – did staying out under the Safety Car cost Perez?"
+Ask about a pit call, stint length or tyre choice and RaceMeta will tell you if it made sense.
+
+Good prompts:
+– "Bahrain – was pitting Leclerc on lap 16 for hards optimal?"
+– "Dry race – should Norris have covered the undercut on lap 13?"
+– "Australia – did staying out under the Safety Car cost Perez?"
           </div>
 
           <div id="errorArea" class="verdict-error" style="display:none;"></div>
 
           <div class="tip-row">
-            <span id="statusText">Verdict ready – change laps, tyres or gaps to see how the call shifts.</span>
-            <span class="context-toggle" id="contextToggle" style="display:none;">Show context block</span>
+            <span id="statusText" class="tip-main">
+Verdict ready – change laps, tyres or gaps to see how the call shifts.
+            </span>
+            <span class="context-toggle" id="contextToggle" style="display:none;">
+              Show context block
+            </span>
           </div>
 
           <div id="contextBlock" class="context-block"></div>
@@ -671,5 +698,6 @@
   </script>
 </body>
 </html>
+
 
 
