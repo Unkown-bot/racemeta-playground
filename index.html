@@ -33,13 +33,16 @@
       background-color: #0a0a0f;
       color: #e5e7eb;
     }
-    /* small helper for fade-in */
     .fade-in {
       animation: fade-in 0.5s ease-out;
     }
     @keyframes fade-in {
       from { opacity: 0; transform: translateY(4px); }
       to   { opacity: 1; transform: translateY(0); }
+    }
+    #simpleSummary,
+    #proSummary {
+      white-space: pre-line;
     }
   </style>
 </head>
@@ -56,7 +59,6 @@
       <div class="max-w-6xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4">
         <div class="flex items-center gap-3">
           <div class="w-10 h-10 rounded-lg bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/40">
-            <!-- simple lightning icon -->
             <svg viewBox="0 0 24 24" class="w-5 h-5 text-white" fill="currentColor">
               <path d="M13 2L4 14h6l-1 8 9-12h-6l1-8z"></path>
             </svg>
@@ -69,13 +71,12 @@
               </span>
             </div>
             <p class="text-slate-500 text-xs sm:text-sm">
-              Race strategy analysis powered by telemetry & timing data
+              Race strategy analysis powered by OpenF1 data &amp; OpenAI
             </p>
           </div>
         </div>
 
         <div id="headerControls" class="hidden items-center gap-3">
-          <!-- view toggle -->
           <div class="flex items-center gap-1 p-1 bg-white/5 border border-white/10 rounded-lg text-sm">
             <button id="viewSimpleBtn"
               class="px-3 py-1.5 rounded bg-red-500 text-white shadow shadow-red-500/40 text-xs sm:text-sm">
@@ -113,7 +114,7 @@
             <div class="relative bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-2xl p-6 sm:p-8 backdrop-blur-xl shadow-2xl">
               <div class="space-y-4">
                 <div>
-                  <label for="questionInput" class="block text-sm text-white mb-2 font-medium">
+                  <label for="questionInput" class="block text-sm text-slate-300 mb-1">
                     Your question
                   </label>
                   <textarea id="questionInput"
@@ -134,7 +135,6 @@
             </div>
           </div>
 
-          <!-- Example prompts -->
           <div class="mt-10">
             <p class="text-slate-500 text-xs sm:text-sm mb-3">Try asking:</p>
             <div class="space-y-3">
@@ -159,12 +159,9 @@
 
         <!-- SIMPLE VERDICT -->
         <section id="simpleSection" class="max-w-3xl mx-auto hidden fade-in">
-          <!-- race context -->
           <div id="simpleContext" class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400 mb-6">
-            <!-- filled by JS -->
           </div>
 
-          <!-- verdict card -->
           <div class="relative mb-6">
             <div id="simpleGlow" class="absolute -inset-1 rounded-2xl blur-2xl opacity-60"></div>
             <div id="simpleCard"
@@ -185,43 +182,38 @@
                     </span>
                   </div>
                   <p id="simpleSummary" class="text-slate-200 text-sm sm:text-base leading-relaxed">
-                    <!-- summary text -->
                   </p>
                 </div>
               </div>
 
-              <!-- quick metrics - purely illustrative -->
               <div class="grid grid-cols-3 gap-3 pt-5 border-t border-white/10">
                 <div class="text-center">
-                  <p class="text-[11px] text-slate-500 mb-1">Tyres / stint</p>
+                  <p class="text-[11px] text-slate-500 mb-1">Tyre life</p>
                   <p class="text-sm text-slate-200">See verdict</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-[11px] text-slate-500 mb-1">Track position risk</p>
+                  <p class="text-[11px] text-slate-500 mb-1">Traffic cost</p>
                   <p class="text-sm text-slate-200">Explained above</p>
                 </div>
                 <div class="text-center">
-                  <p class="text-[11px] text-slate-500 mb-1">Alt. window</p>
+                  <p class="text-[11px] text-slate-500 mb-1">Track position</p>
                   <p class="text-sm text-slate-200">Coming from telemetry</p>
                 </div>
               </div>
             </div>
           </div>
 
-          <!-- recommended text (optional) -->
           <div id="simpleAltBlock" class="hidden bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-5 sm:p-6 mb-6">
             <p class="text-[11px] sm:text-xs text-slate-500 mb-2">Recommended alternative</p>
             <p id="simpleAltText" class="text-slate-200 text-sm sm:text-base leading-relaxed"></p>
           </div>
 
-          <!-- go pro -->
           <button id="simpleToProBtn"
             class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm sm:text-base bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/25 hover:border-red-500/40 text-red-300 hover:text-red-200 transition-all">
             <span>View detailed analysis</span>
             <span class="text-lg">›</span>
           </button>
 
-          <!-- good prompts -->
           <div class="pt-8">
             <p class="text-slate-500 text-xs sm:text-sm mb-3">Good prompts:</p>
             <div class="space-y-2 text-xs sm:text-sm">
@@ -240,12 +232,9 @@
 
         <!-- PRO VIEW -->
         <section id="proSection" class="max-w-6xl mx-auto hidden fade-in">
-          <!-- context line -->
           <div id="proContext" class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400 mb-6">
-            <!-- filled by JS -->
           </div>
 
-          <!-- verdict banner -->
           <div class="relative mb-8">
             <div id="proGlow" class="absolute -inset-1 rounded-2xl blur-2xl opacity-70"></div>
             <div id="proCard"
@@ -266,7 +255,6 @@
                     </span>
                   </div>
                   <p id="proSummary" class="text-slate-200 text-sm sm:text-base leading-relaxed mb-4">
-                    <!-- summary -->
                   </p>
                   <p class="text-[11px] sm:text-xs text-slate-400">
                     Telemetry-based metrics (tyre deg, traffic cost, undercut window) plug in here as the backend evolves.
@@ -276,10 +264,8 @@
             </div>
           </div>
 
-          <!-- metrics grid - currently generic placeholders -->
           <h3 class="text-sm sm:text-base font-semibold text-white mb-4">Performance metrics (layout preview)</h3>
           <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-            <!-- 6 generic cards -->
             <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
               <p class="text-[11px] text-slate-500 mb-1">Tyre life</p>
               <p class="text-lg text-white mb-1">–</p>
@@ -289,11 +275,19 @@
               </div>
             </div>
             <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
-              <p class="text-[11px] text-slate-500 mb-1">Track position</p>
+              <p class="text-[11px] text-slate-500 mb-1">Traffic cost</p>
               <p class="text-lg text-white mb-1">–</p>
-              <p class="text-[11px] text-slate-500">Lost / gained places through the cycle.</p>
+              <p class="text-[11px] text-slate-500">Time lost fighting cars after the stop.</p>
               <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
                 <div class="h-full w-1/3 bg-red-500"></div>
+              </div>
+            </div>
+            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
+              <p class="text-[11px] text-slate-500 mb-1">Track position</p>
+              <p class="text-lg text-white mb-1">–</p>
+              <p class="text-[11px] text-slate-500">Places lost / gained through the cycle.</p>
+              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
+                <div class="h-full w-1/2 bg-cyan-500"></div>
               </div>
             </div>
             <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
@@ -302,14 +296,6 @@
               <p class="text-[11px] text-slate-500">Post-stop pace vs rivals.</p>
               <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
                 <div class="h-full w-1/2 bg-cyan-500"></div>
-              </div>
-            </div>
-            <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
-              <p class="text-[11px] text-slate-500 mb-1">Traffic cost</p>
-              <p class="text-lg text-white mb-1">–</p>
-              <p class="text-[11px] text-slate-500">Time lost fighting cars after the stop.</p>
-              <div class="mt-3 h-1 rounded-full bg-white/5 overflow-hidden">
-                <div class="h-full w-1/3 bg-red-500"></div>
               </div>
             </div>
             <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4">
@@ -330,15 +316,12 @@
             </div>
           </div>
 
-          <!-- detailed reasoning -->
           <h3 class="text-sm sm:text-base font-semibold text-white mb-4">Detailed analysis</h3>
           <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-5 sm:p-6 mb-8">
             <div id="proReasons" class="space-y-3 text-sm sm:text-base text-slate-200">
-              <!-- list items inserted here -->
             </div>
           </div>
 
-          <!-- recommended strategy block -->
           <div id="proAltBlock" class="hidden mb-10">
             <div class="flex items-center gap-2 mb-3">
               <span class="text-amber-400">💡</span>
@@ -353,7 +336,6 @@
           </div>
         </section>
 
-        <!-- error banner -->
         <div id="errorBanner" class="hidden max-w-3xl mx-auto mt-4 px-4 py-3 rounded-lg bg-red-500/10 border border-red-500/40 text-xs sm:text-sm text-red-200">
           Could not reach the RaceMeta backend. Showing a demo verdict instead.
         </div>
@@ -381,7 +363,6 @@
     const simpleToProBtn = document.getElementById("simpleToProBtn");
     const shortcutLabel = document.getElementById("shortcutLabel");
 
-    // simple view fields
     const simpleContext = document.getElementById("simpleContext");
     const simpleGlow = document.getElementById("simpleGlow");
     const simpleIconWrapper = document.getElementById("simpleIconWrapper");
@@ -392,7 +373,6 @@
     const simpleAltBlock = document.getElementById("simpleAltBlock");
     const simpleAltText = document.getElementById("simpleAltText");
 
-    // pro view fields
     const proContext = document.getElementById("proContext");
     const proGlow = document.getElementById("proGlow");
     const proIconWrapper = document.getElementById("proIconWrapper");
@@ -407,7 +387,6 @@
     let lastResult = null;
     let fromMock = false;
 
-    // platform label
     if (navigator.platform && navigator.platform.includes("Mac")) {
       shortcutLabel.textContent = "⌘";
     }
@@ -465,32 +444,135 @@
         "p-3 sm:p-4 rounded-xl border " + border + " " + bg + " flex items-center justify-center";
     }
 
+    function formatVerdictText(text) {
+      if (!text) return "";
+      let t = text;
+
+      t = t.replace(/Verdict:/i, "Verdict:\n");
+      t = t.replace(/Why:/i, "\n\nWhy:\n");
+      t = t.replace(/Alt:/i, "\n\nAlt: ");
+      t = t.replace(/Take:/i, "\n\nTake: ");
+      t = t.replace(/\s-\s/g, "\n• ");
+
+      return t.trim();
+    }
+
+    function parsePrompt(question) {
+      const q = question || "";
+      const drivers = [
+        "Verstappen","Leclerc","Norris","Hamilton","Russell","Perez","Sainz",
+        "Piastri","Alonso","Ocon","Gasly","Stroll","Albon","Sargeant","Bottas",
+        "Zhou","Tsunoda","Ricciardo","Magnussen","Hulkenberg"
+      ];
+      const raceKeywords = {
+        "bahrain": "Bahrain Grand Prix",
+        "jeddah": "Saudi Arabian Grand Prix",
+        "saudi": "Saudi Arabian Grand Prix",
+        "vegas": "Las Vegas Grand Prix",
+        "las vegas": "Las Vegas Grand Prix",
+        "monaco": "Monaco Grand Prix",
+        "silverstone": "British Grand Prix",
+        "britain": "British Grand Prix",
+        "australia": "Australian Grand Prix",
+        "melbourne": "Australian Grand Prix",
+        "singapore": "Singapore Grand Prix",
+        "monza": "Italian Grand Prix",
+        "imola": "Emilia Romagna Grand Prix",
+        "mexico": "Mexican Grand Prix",
+        "brazil": "Brazilian Grand Prix",
+        "qatar": "Qatar Grand Prix",
+        "abu dhabi": "Abu Dhabi Grand Prix",
+        "spa": "Belgian Grand Prix",
+        "austria": "Austrian Grand Prix",
+        "hungary": "Hungarian Grand Prix",
+        "zandvoort": "Dutch Grand Prix",
+        "netherlands": "Dutch Grand Prix",
+        "miami": "Miami Grand Prix",
+        "canada": "Canadian Grand Prix",
+        "usa": "United States Grand Prix",
+        "cota": "United States Grand Prix"
+      };
+
+      let driver = "Driver (from prompt)";
+      for (const name of drivers) {
+        const re = new RegExp("\\b" + name + "\\b", "i");
+        if (re.test(q)) {
+          driver = name;
+          break;
+        }
+      }
+
+      let lap = 0;
+      const lapMatch = q.match(/lap\s+(\d+)/i);
+      if (lapMatch) lap = parseInt(lapMatch[1], 10);
+
+      let position = "—";
+      const posMatch = q.match(/P(\d+)/i);
+      if (posMatch) position = "P" + posMatch[1];
+
+      let race = "Latest race (backend default)";
+      const lower = q.toLowerCase();
+      for (const key in raceKeywords) {
+        if (lower.includes(key)) {
+          race = raceKeywords[key];
+          break;
+        }
+      }
+
+      return {
+        driver,
+        race,
+        lap,
+        position,
+        label: q.slice(0, 80) + (q.length > 80 ? "…" : "")
+      };
+    }
+
     function mapBackendToResult(question, backendData) {
       const verdictText =
         (backendData && backendData.verdict) ||
         "No explicit verdict text returned from the backend.";
       const contextText = backendData && backendData.context ? backendData.context : "";
-      const lines = contextText
-        .split("\n")
-        .map((l) => l.trim())
-        .filter(Boolean);
+
+      let altStrategy = null;
+      let reasoning = [];
+
+      if (contextText) {
+        const altMatch = contextText.match(/Alt:\s*([^]*?)(?:Take:|$)/i);
+        if (altMatch) altStrategy = altMatch[1].trim();
+
+        const whyMatch = contextText.match(/Why:\s*([^]*?)(?:Alt:|Take:|$)/i);
+        if (whyMatch) {
+          reasoning = whyMatch[1]
+            .split(/\n|-\s*/g)
+            .map((l) => l.trim())
+            .filter(Boolean);
+        }
+
+        if (!reasoning.length) {
+          reasoning = contextText
+            .split("\n")
+            .map((l) => l.trim())
+            .filter(Boolean);
+        }
+      }
+
+      if (!reasoning.length) {
+        reasoning = [
+          "Backend did not yet return structured reasoning, only a single verdict text."
+        ];
+      }
+
+      const rc = parsePrompt(question);
 
       return {
         source: "backend",
         summary: verdictText,
         verdictType: classifyVerdict(verdictText),
         confidence: 80,
-        reasoning: lines.length ? lines : [
-          "Backend did not yet return structured reasoning, only a single verdict text.",
-        ],
-        altStrategy: null,
-        raceContext: {
-          driver: "Driver",
-          race: "Latest race (backend default)",
-          lap: 0,
-          position: "—",
-          label: question.slice(0, 80) + (question.length > 80 ? "…" : ""),
-        },
+        reasoning,
+        altStrategy,
+        raceContext: rc,
       };
     }
 
@@ -498,16 +580,14 @@
       return {
         source: "mock",
         summary:
-          "The pit stop timing was 2–3 laps too early. Maintaining track position would have yielded a better race outcome given tyre degradation rates and traffic conditions.",
+          "Verdict: Suboptimal early stop.\n\nWhy:\n• Tyre degradation was only at 28% – well below the 45% threshold where pitting becomes mandatory.\n• Pitting 2 laps before the optimal undercut window (lap 18–21) sacrificed valuable track position.\n• Car rejoined into traffic and lost ~4.2s battling Alonso, Ocon and Gasly after the stop.\n• The 0.8s/lap pace gain on new tyres was offset by the traffic loss for the next 8 laps.\n• Rivals who stopped on lap 18–19 kept track position and executed clean undercuts.\n\nTake: In high-deg races, track position plus access to the main undercut window usually beats “safe” early stops.",
         verdictType: "suboptimal",
         confidence: 87,
         reasoning: [
-          "Tyre degradation was only at 28% – well below the 45% threshold where pitting becomes mandatory.",
+          "Tyre degradation was only at 28% – significantly below the pit trigger threshold.",
           "Pitting 2 laps before the optimal undercut window (lap 18–21) sacrificed valuable track position.",
-          "Car rejoined into traffic and lost ~4.2s battling Alonso, Ocon and Gasly after the stop.",
-          "The 0.8s/lap pace gain on new tyres was offset by the traffic loss for the next 8 laps.",
-          "Rivals who stopped on lap 18–19 kept track position and executed clean undercuts.",
-          "Final position P4 vs projected P2 if the stop was aligned with the optimal window.",
+          "Rejoined into traffic and lost ~4.2s battling Alonso, Ocon and Gasly after the stop.",
+          "Rivals who boxed later executed clear undercuts and maintained position.",
         ],
         altStrategy:
           "Extend the stint to lap 18–19, targeting the main undercut window while tyre performance is still above 55%. This keeps track position and maximises the effective advantage of fresh tyres.",
@@ -534,7 +614,7 @@
         styles.color + " text-lg sm:text-2xl font-semibold";
 
       simpleConfidence.textContent = "Confidence ~" + result.confidence + "%";
-      simpleSummary.textContent = result.summary;
+      simpleSummary.textContent = formatVerdictText(result.summary);
 
       simpleContext.innerHTML = "";
       const parts = [
@@ -576,7 +656,7 @@
         styles.color + " text-xl sm:text-2xl font-semibold";
 
       proConfidence.textContent = result.confidence + "% confidence";
-      proSummary.textContent = result.summary;
+      proSummary.textContent = formatVerdictText(result.summary);
 
       proContext.innerHTML = "";
       const parts = [
@@ -727,7 +807,6 @@
       showAsk();
     });
 
-    // initial
     showAsk();
   </script>
 </body>
