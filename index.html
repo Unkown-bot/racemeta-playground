@@ -387,15 +387,19 @@
   let lastResult = null;
   let fromMock = false;
 
+  // Show ⌘ on Mac, Ctrl otherwise
   if (navigator.platform && navigator.platform.includes("Mac")) {
     shortcutLabel.textContent = "⌘";
+  } else {
+    shortcutLabel.textContent = "Ctrl";
   }
+
+  // ---------- helpers: verdict + styling ----------
 
   function classifyVerdict(text) {
     const t = (text || "").toLowerCase();
-    if (t.includes("suboptimal") || t.includes("too early") || t.includes("too late") || t.includes("costly")) return "suboptimal";
-    if (t.includes("optimal") || t.includes("good call") || t.includes("right call") || t.includes("smart")) return "optimal";
-    if (t.includes("need more info")) return "neutral";
+    if (t.includes("suboptimal") || t.includes("too early") || t.includes("too late")) return "suboptimal";
+    if (t.includes("optimal") || t.includes("good call") || t.includes("right call")) return "optimal";
     return "neutral";
   }
 
@@ -445,20 +449,7 @@
       "p-3 sm:p-4 rounded-xl border " + border + " " + bg + " flex items-center justify-center";
   }
 
-  function formatVerdictText(text) {
-    if (!text) return "";
-    let t = text;
-
-    t = t.replace(/Verdict:\s*/i, "Verdict:\n");
-    t = t.replace(/Why:\s*/i, "\n\nWhy:\n");
-    t = t.replace(/Alt:\s*/i, "\n\nAlt: ");
-    t = t.replace(/Take:\s*/i, "\n\nTake: ");
-    t = t.replace(/\s-\s/g, "\n• ");
-
-    return t.trim();
-  }
-
-  // Old prompt-based parser kept as fallback if backend doesn't send race_context
+  // For fallback only
   function parsePrompt(question) {
     const q = question || "";
     const drivers = [
@@ -530,76 +521,35 @@
     };
   }
 
-  // ✅ NEW: map backend JSON -> UI model using the structured fields
+  // ---------- map backend JSON → UI model ----------
+
   function mapBackendToResult(question, backendData) {
-    if (!backendData) {
-      return {
-        source: "backend",
-        summary: "No data received from backend.",
-        verdictType: "neutral",
-        confidence: 80,
-        reasoning: ["Backend returned an empty response."],
-        altStrategy: null,
-        raceContext: parsePrompt(question),
-        metrics: {}
-      };
+    if (!backendData || backendData.error) {
+      throw new Error(backendData && backendData.error ? backendData.error : "Empty backend response");
     }
 
-    const summary =
-      backendData.summary ||
-      backendData.verdict ||
-      "No explicit verdict text returned from the backend.";
+    const verdictText = backendData.verdict || backendData.summary || "";
+    const verdictType = backendData.verdict_type || classifyVerdict(verdictText);
+    const confidence = backendData.confidence != null ? backendData.confidence : 80;
+    const summary = backendData.summary || verdictText;
 
-    const verdictType =
-      backendData.verdict_type ||
-      classifyVerdict(summary);
-
-    const confidence =
-      typeof backendData.confidence === "number"
-        ? backendData.confidence
-        : 80;
-
-    let reasoning = Array.isArray(backendData.reasoning)
-      ? backendData.reasoning.slice()
-      : [];
-
-    if (!reasoning.length && backendData.context) {
-      // Fallback: try to split context into sentences
-      reasoning = backendData.context
-        .split("\n")
-        .map((l) => l.trim())
-        .filter(Boolean);
-    }
+    const raceContext = backendData.race_context || parsePrompt(question);
+    const reasoning =
+      Array.isArray(backendData.reasoning) && backendData.reasoning.length
+        ? backendData.reasoning
+        : ["Backend did not yet return structured reasoning, only a single verdict text."];
 
     const altStrategy =
       backendData.recommended_strategy ||
+      backendData.altStrategy ||
       null;
-
-    let raceContext;
-    if (backendData.race_context) {
-      const rc = backendData.race_context;
-      raceContext = {
-        driver: rc.driver || "Unknown driver",
-        race: rc.race || "Unknown race",
-        lap: rc.lap || 0,
-        position: rc.position
-          ? (typeof rc.position === "string" ? rc.position : "P" + rc.position)
-          : "Position –",
-        label:
-          rc.label ||
-          [rc.driver, rc.race, rc.lap ? "lap " + rc.lap : null]
-            .filter(Boolean)
-            .join(" – "),
-      };
-    } else {
-      raceContext = parsePrompt(question);
-    }
 
     const metrics = backendData.metrics || {};
 
     return {
       source: "backend",
       summary,
+      verdictText,
       verdictType,
       confidence,
       reasoning,
@@ -609,32 +559,34 @@
     };
   }
 
-  // Demo fallback if backend really dies
+  // Fallback mock if backend down
   function mockResult() {
     return {
       source: "mock",
-      summary:
-        "Verdict: Suboptimal early stop.\n\nWhy:\n• Tyre degradation was only at 28% – well below the 45% threshold where pitting becomes mandatory.\n• Pitting 2 laps before the optimal undercut window (lap 18–21) sacrificed valuable track position.\n• Car rejoined into traffic and lost ~4.2s battling Alonso, Ocon and Gasly after the stop.\n• The 0.8s/lap pace gain on new tyres was offset by the traffic loss for the next 8 laps.\n• Rivals who stopped on lap 18–19 kept track position and executed clean undercuts.\n\nTake: In high-deg races, track position plus access to the main undercut window usually beats “safe” early stops.",
-      verdictType: "suboptimal",
-      confidence: 87,
+      summary: "Slightly early, defendable",
+      verdictText:
+        "Verdict: Slightly early, defendable\nWhy:\n- Lap 16 stop protected track position but sacrificed tyre life margin\n- Rejoined into traffic and lost time fighting cars after the stop\nAlt: Extend to lap 18–19 and box into a cleaner window.\nTake: Track position plus main undercut window usually beats ‘safe’ early stops.",
+      verdictType: "neutral",
+      confidence: 80,
       reasoning: [
-        "Tyre degradation was only at 28% – significantly below the pit trigger threshold.",
-        "Pitting 2 laps before the optimal undercut window (lap 18–21) sacrificed valuable track position.",
-        "Rejoined into traffic and lost ~4.2s battling Alonso, Ocon and Gasly after the stop.",
-        "Rivals who boxed later executed clear undercuts and maintained position.",
+        "Lap 16 stop sacrificed tyre life margin just as others were stretching for a stronger second stint",
+        "Undercut power on mediums at Bahrain is decent but not race-defining without traffic or safety car threat",
+        "Ferrari likely covering undercut risk, but it boxed Charles into a shorter, more fragile middle stint",
       ],
       altStrategy:
-        "Extend the stint to lap 18–19, targeting the main undercut window while tyre performance is still above 55%. This keeps track position and maximises the effective advantage of fresh tyres.",
+        "Extend to lap 18–19, then commit to a stronger M–H window with more flexibility on final stint length.",
       raceContext: {
         driver: "Charles Leclerc",
         race: "Bahrain Grand Prix",
         lap: 16,
-        position: "P2 → P4",
+        position: "P2",
         label: "Leclerc – Bahrain, lap 16 box for hards",
       },
       metrics: {},
     };
   }
+
+  // ---------- apply result → Simple view ----------
 
   function applyResultToSimple(result) {
     const vType = result.verdictType;
@@ -645,25 +597,21 @@
     setIconWrapper(simpleIconWrapper, vType);
 
     simpleVerdictLabel.textContent = styles.label;
-    simpleVerdictLabel.className =
-      styles.color + " text-lg sm:text-2xl font-semibold";
+    simpleVerdictLabel.className = styles.color + " text-lg sm:text-2xl font-semibold";
 
     simpleConfidence.textContent = "Confidence ~" + result.confidence + "%";
-    simpleSummary.textContent = formatVerdictText(result.summary);
 
+    // Simple summary = clean one-liner from backend (no "Verdict:" prefix)
+    simpleSummary.textContent = result.summary;
+
+    // Context row (driver, race, lap, position)
     simpleContext.innerHTML = "";
     const rc = result.raceContext || {};
     const parts = [
       { dot: "bg-red-400", text: rc.driver || "Driver –" },
       { dot: "bg-slate-600", text: rc.race || "Race –" },
-      {
-        dot: "bg-slate-600",
-        text: rc.lap ? "Lap " + rc.lap : "Lap –",
-      },
-      {
-        dot: "bg-slate-600",
-        text: rc.position || "Position –",
-      },
+      { dot: "bg-slate-600", text: rc.lap ? "Lap " + rc.lap : "Lap –" },
+      { dot: "bg-slate-600", text: rc.position || "Position –" },
     ];
     parts.forEach((p) => {
       const item = document.createElement("div");
@@ -685,6 +633,8 @@
     }
   }
 
+  // ---------- apply result → Pro view ----------
+
   function applyResultToPro(result) {
     const vType = result.verdictType;
     const styles = verdictStyles(vType);
@@ -694,25 +644,21 @@
     setIconWrapper(proIconWrapper, vType);
 
     proVerdictLabel.textContent = styles.label;
-    proVerdictLabel.className =
-      styles.color + " text-xl sm:text-2xl font-semibold";
+    proVerdictLabel.className = styles.color + " text-xl sm:text-2xl font-semibold";
 
     proConfidence.textContent = result.confidence + "% confidence";
-    proSummary.textContent = formatVerdictText(result.summary);
 
-    const rc = result.raceContext || {};
+    // Pro summary = same one-liner summary
+    proSummary.textContent = result.summary;
+
+    // Context row
     proContext.innerHTML = "";
+    const rc = result.raceContext || {};
     const parts = [
       { dot: "bg-cyan-400", text: rc.driver || "Driver –" },
       { dot: "bg-slate-600", text: rc.race || "Race –" },
-      {
-        dot: "bg-slate-600",
-        text: rc.lap ? "Lap " + rc.lap : "Lap –",
-      },
-      {
-        dot: "bg-slate-600",
-        text: rc.position || "Position –",
-      },
+      { dot: "bg-slate-600", text: rc.lap ? "Lap " + rc.lap : "Lap –" },
+      { dot: "bg-slate-600", text: rc.position || "Position –" },
     ];
     parts.forEach((p) => {
       const item = document.createElement("div");
@@ -726,8 +672,9 @@
       proContext.appendChild(item);
     });
 
+    // Detailed analysis bullets
     proReasons.innerHTML = "";
-    (result.reasoning || []).forEach((reason, index) => {
+    result.reasoning.forEach((reason, index) => {
       const row = document.createElement("div");
       row.className = "flex gap-3";
       row.innerHTML =
@@ -746,7 +693,12 @@
     } else {
       proAltBlock.classList.add("hidden");
     }
+
+    // NOTE: metrics (tyre life, traffic cost, etc.) still layout-preview only.
+    // When backend starts returning metrics, we’ll wire them here from result.metrics.
   }
+
+  // ---------- view helpers ----------
 
   function showAsk() {
     askSection.classList.remove("hidden");
@@ -793,6 +745,8 @@
     }
   }
 
+  // ---------- main analyze flow ----------
+
   async function handleAnalyze(question) {
     const q = question.trim();
     if (!q) return;
@@ -829,6 +783,8 @@
     }
   }
 
+  // ---------- event wiring ----------
+
   analyzeBtn.addEventListener("click", () => {
     handleAnalyze(questionInput.value);
   });
@@ -858,6 +814,7 @@
 
   showAsk();
 </script>
+
 
 </body>
 </html>
