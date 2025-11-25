@@ -161,7 +161,8 @@
 
     <!-- SIMPLE SECTION -->
     <section id="simpleSection" class="hidden">
-      <div class="max-w-3xl space-y-6">
+     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div class="max-w-4xl mx-auto space-y-8">
         <!-- Race context -->
         <div
           id="simpleContext"
@@ -483,7 +484,7 @@
       });
     }
 
-    function buildRaceContextRow(container, raceContext, colorForFirstDot) {
+    function buildRaceContextRow(, raceContext, colorForFirstDot) {
       container.innerHTML = "";
       const ctx = raceContext || {};
       const parts = [
