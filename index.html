@@ -2,871 +2,286 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>RaceMeta – F1 Strategy Agent</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <!-- Tailwind via CDN -->
   <script src="https://cdn.tailwindcss.com"></script>
   <style>
     body {
-      background: radial-gradient(circle at top, #111827 0, #020617 55%);
-      color: #e5e7eb;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text",
-        "Inter", Arial, sans-serif;
+      background: radial-gradient(circle at 30% 20%, #1d1f27, #0b0c11);
+      min-height: 100vh;
+      color: white;
+    }
+    .card {
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(16px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 18px;
+      padding: 24px;
     }
   </style>
 </head>
-<body class="min-h-screen bg-black/95 text-slate-100">
-  <div class="fixed inset-0 -z-10 overflow-hidden pointer-events-none">
-    <div class="absolute -top-32 left-1/4 w-96 h-96 bg-red-500/10 rounded-full blur-3xl"></div>
-    <div class="absolute -bottom-40 right-1/4 w-[28rem] h-[28rem] bg-orange-500/10 rounded-full blur-3xl"></div>
-  </div>
 
-  <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
-    <!-- Header -->
-    <header class="border-b border-white/10 bg-black/40 backdrop-blur-xl rounded-2xl px-4 sm:px-6 py-4 sm:py-5 mb-6 sm:mb-8">
-      <div class="flex items-center justify-between gap-4 flex-wrap">
-        <div class="flex items-center gap-3 sm:gap-4">
-          <div class="w-10 h-10 sm:w-11 sm:h-11 rounded-xl bg-gradient-to-br from-red-500 to-orange-500 flex items-center justify-center shadow-lg shadow-red-500/40">
-            <span class="text-white font-semibold text-lg">R</span>
-          </div>
-          <div>
-            <div class="flex items-center gap-2 flex-wrap">
-              <h1 class="text-white text-lg sm:text-xl tracking-tight">
-                RaceMeta
-              </h1>
-              <span class="px-2.5 py-0.5 text-[11px] uppercase tracking-[0.16em] rounded-full border border-red-500/40 bg-red-500/10 text-red-300">
-                F1 Strategy Agent
-              </span>
-            </div>
-            <p class="mt-1 text-xs sm:text-sm text-slate-400">
-              Race strategy analysis powered by OpenF1 data and OpenAI.
-            </p>
-          </div>
-        </div>
+<body class="text-white">
 
-        <!-- Header controls (view toggle + new analysis) -->
-        <div id="headerControls" class="hidden flex items-center gap-3">
-          <div class="inline-flex items-center gap-1 p-0.5 bg-white/5 border border-white/10 rounded-xl">
-            <button
-              id="viewSimpleBtn"
-              type="button"
-              class="px-3 py-1.5 text-xs sm:text-sm rounded-lg text-slate-400"
-            >
-              Simple
-            </button>
-            <button
-              id="viewProBtn"
-              type="button"
-              class="px-3 py-1.5 text-xs sm:text-sm rounded-lg text-slate-400"
-            >
-              Pro
-            </button>
-          </div>
-          <button
-            id="newAnalysisBtn"
-            type="button"
-            class="text-xs sm:text-sm text-slate-400 hover:text-white transition-colors"
-          >
-            New analysis
-          </button>
-        </div>
+  <!-- HEADER -->
+  <header class="w-full flex justify-between items-center px-6 py-5 max-w-6xl mx-auto">
+    <div class="flex items-center gap-4">
+      <div class="w-10 h-10 rounded-xl bg-red-500 flex items-center justify-center font-bold text-xl">R</div>
+      <div>
+        <div class="text-xl font-semibold">RaceMeta</div>
+        <div class="text-xs text-red-300 tracking-widest">F1 STRATEGY AGENT</div>
       </div>
-    </header>
-
-    <!-- Error banner -->
-    <div
-      id="errorBanner"
-      class="hidden mb-4 rounded-xl border border-red-500/40 bg-red-500/10 text-red-100 px-4 py-3 text-sm"
-    >
-      Could not reach the RaceMeta backend. Showing a demo verdict instead.
     </div>
 
-    <!-- ASK SECTION -->
-    <main id="askSection">
-      <div class="max-w-3xl">
-        <h2 class="text-2xl sm:text-3xl font-semibold tracking-tight mb-2">
-          Ask about any F1 strategy call.
-        </h2>
-        <p class="text-sm sm:text-base text-slate-400 mb-6">
-          Mention the driver, race and lap if you can. RaceMeta will use OpenF1 data from the latest race by default.
+    <div id="headerControls" class="flex gap-4">
+      <button id="simpleMode" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20">Simple</button>
+      <button id="proMode" class="px-4 py-2 rounded-lg bg-red-600 hover:bg-red-700">Pro</button>
+      <button id="newAnalysis" class="px-4 py-2 rounded-lg bg-white/10 hover:bg-white/20">New analysis</button>
+    </div>
+  </header>
+
+  <!-- ERROR BANNER -->
+  <div id="errorBanner" class="hidden w-full text-center py-3 bg-red-700 text-white">
+    Could not reach backend — showing demo output.
+  </div>
+
+  <!-- ASK SECTION -->
+  <section id="askSection" class="pt-12">
+    <div class="max-w-3xl mx-auto px-4">
+
+      <div class="text-center mb-10">
+        <h2 class="text-4xl font-semibold">Ask about any F1 strategy call.</h2>
+        <p class="text-slate-300 max-w-2xl mx-auto">
+          Mention the driver, race and lap. RaceMeta will automatically use OpenF1 data.
         </p>
       </div>
 
-      <div class="max-w-3xl">
-        <div class="relative">
-          <div class="absolute -inset-1 bg-gradient-to-r from-red-500/20 to-orange-500/20 rounded-2xl blur-2xl opacity-60"></div>
-          <div class="relative bg-gradient-to-b from-white/10 to-white/5 border border-white/10 rounded-2xl shadow-2xl shadow-black/40 p-5 sm:p-6">
-            <div class="space-y-4">
-              <div>
-                <label
-                  for="questionInput"
-                  class="block text-sm text-slate-200 mb-2"
-                >
-                  Your question
-                </label>
-                <textarea
-                  id="questionInput"
-                  rows="4"
-                  placeholder='e.g. "Should Leclerc have pitted on lap 16 in Bahrain?"'
-                  class="w-full rounded-xl bg-black/60 border border-white/10 px-3.5 py-3 text-sm sm:text-base text-white placeholder:text-slate-500 resize-none focus:outline-none focus:ring-2 focus:ring-red-500/60 focus:border-transparent"
-                ></textarea>
-                <p class="mt-1 text-xs text-slate-500">
-                  Press <span id="shortcutLabel">Ctrl</span> + Enter to analyze.
-                </p>
-              </div>
+      <div class="card space-y-4">
+        <label class="text-sm text-slate-300">Your question</label>
+        <textarea
+          id="questionInput"
+          class="w-full h-32 bg-black/40 p-4 rounded-lg border border-white/10 focus:outline-none"
+          placeholder="e.g. “Should Leclerc have pitted on lap 16 in Bahrain?”"
+        ></textarea>
 
-              <button
-                id="analyzeBtn"
-                type="button"
-                class="w-full inline-flex items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-red-500 to-orange-500 text-white text-sm sm:text-base font-medium py-2.5 sm:py-3 shadow-lg shadow-red-500/40 disabled:opacity-60 disabled:cursor-not-allowed transition-all"
-              >
-                <span
-                  id="analyzeSpinner"
-                  class="hidden w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin"
-                ></span>
-                <span id="analyzeBtnLabel">Analyze strategy</span>
-              </button>
-            </div>
-          </div>
-        </div>
-
-        <!-- Example prompts -->
-        <div class="mt-8">
-          <p class="text-xs sm:text-sm text-slate-500 mb-3">
-            Try asking:
-          </p>
-          <div class="grid gap-2 sm:gap-3 text-sm">
-            <button
-              class="example-btn text-left px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-slate-300 transition"
-              data-example="Was pitting Leclerc on lap 16 in Bahrain actually optimal?"
-            >
-              Was pitting Leclerc on lap 16 in Bahrain actually optimal?
-            </button>
-            <button
-              class="example-btn text-left px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-slate-300 transition"
-              data-example="Should Verstappen have stayed out under the Safety Car in Austria?"
-            >
-              Should Verstappen have stayed out under the Safety Car in Austria?
-            </button>
-            <button
-              class="example-btn text-left px-4 py-3 bg-white/5 hover:bg-white/10 border border-white/10 hover:border-white/20 rounded-xl text-slate-300 transition"
-              data-example="Did Norris box too early when covering the undercut in Silverstone?"
-            >
-              Did Norris box too early when covering the undercut in Silverstone?
-            </button>
-          </div>
-        </div>
-      </div>
-    </main>
-
-    <!-- SIMPLE SECTION -->
-    <section id="simpleSection" class="hidden">
-     <div class="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <div class="max-w-4xl mx-auto space-y-8">
-        <!-- Race context -->
-        <div
-          id="simpleContext"
-          class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400"
-        ></div>
-
-        <!-- Verdict card -->
-        <div class="relative">
-          <div
-            id="simpleGlow"
-            class="absolute -inset-1 rounded-2xl blur-2xl opacity-70 bg-gradient-to-r from-slate-500/20 to-slate-500/10"
-          ></div>
-          <div class="relative bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-6 shadow-2xl shadow-black/40">
-            <div class="flex gap-4 sm:gap-5 items-start">
-              <div
-                id="simpleIconWrapper"
-                class="p-3 sm:p-4 rounded-xl border border-slate-500/40 bg-slate-500/10 flex items-center justify-center"
-              >
-                <span
-                  id="simpleIconEmoji"
-                  class="text-xl sm:text-2xl"
-                >
-                  ➖
-                </span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <span
-                    id="simpleVerdictLabel"
-                    class="text-base sm:text-xl font-semibold text-amber-200"
-                  >
-                    Neutral / marginal
-                  </span>
-                  <span
-                    id="simpleConfidence"
-                    class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs sm:text-sm text-slate-300"
-                  >
-                    Confidence ~80%
-                  </span>
-                </div>
-                <p
-                  id="simpleSummary"
-                  class="text-sm sm:text-base text-slate-200 leading-relaxed"
-                >
-                  Verdict summary from RaceMeta will appear here.
-                </p>
-              </div>
-            </div>
-
-            <!-- Quick metrics -->
-            <div
-              id="simpleMetricsRow"
-              class="grid grid-cols-1 sm:grid-cols-3 gap-4 pt-5 mt-4 border-t border-white/10"
-            >
-              <!-- Filled dynamically -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Recommended alternative -->
-        <div
-          id="simpleAltBlock"
-          class="hidden bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4 sm:p-5"
-        >
-          <p class="text-xs sm:text-sm text-slate-500 mb-1">
-            Recommended alternative
-          </p>
-          <p
-            id="simpleAltText"
-            class="text-sm sm:text-base text-slate-200 leading-relaxed"
-          ></p>
-        </div>
-
-        <!-- View detailed button -->
         <button
-          id="simpleToProBtn"
+          id="analyzeBtn"
           type="button"
-          class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-xl bg-gradient-to-r from-red-500/10 to-orange-500/10 hover:from-red-500/20 hover:to-orange-500/20 border border-red-500/20 hover:border-red-500/40 text-sm sm:text-base text-red-300 hover:text-red-200 transition"
+          class="w-full h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-xl text-white font-semibold flex items-center justify-center gap-2 disabled:opacity-60"
         >
-          <span>View detailed analysis</span>
-          <span class="text-lg">›</span>
+          <span id="analyzeSpinner" class="hidden w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></span>
+          <span id="analyzeBtnLabel">Analyze strategy</span>
         </button>
-
-        <!-- Prompt tips -->
-        <div class="pt-4">
-          <p class="text-xs sm:text-sm text-slate-500 mb-2">
-            Good prompts:
-          </p>
-          <div class="space-y-2 text-xs sm:text-sm">
-            <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400">
-              "Bahrain – was pitting Leclerc on lap 16 for hards optimal?"
-            </div>
-            <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400">
-              "Generic race – should Norris have covered the undercut on lap 13?"
-            </div>
-            <div class="px-3 py-2 rounded-lg bg-white/5 border border-white/10 text-slate-400">
-              "Austria – did staying out under the Safety Car cost Perez?"
-            </div>
-          </div>
-        </div>
       </div>
-    </section>
 
-    <!-- PRO SECTION -->
-    <section id="proSection" class="hidden">
-      <div class="space-y-8 max-w-5xl">
-        <!-- Race context -->
-        <div
-          id="proContext"
-          class="flex flex-wrap items-center gap-4 text-xs sm:text-sm text-slate-400"
-        ></div>
-
-        <!-- Verdict card -->
-        <div class="relative">
-          <div
-            id="proGlow"
-            class="absolute -inset-1 rounded-2xl blur-2xl opacity-70 bg-gradient-to-r from-slate-500/20 to-slate-500/10"
-          ></div>
-          <div class="relative bg-gradient-to-b from-white/10 to-white/5 backdrop-blur-xl border border-white/10 rounded-2xl p-5 sm:p-6 shadow-2xl shadow-black/40">
-            <div class="flex gap-4 sm:gap-5 items-start">
-              <div
-                id="proIconWrapper"
-                class="p-3 sm:p-4 rounded-xl border border-slate-500/40 bg-slate-500/10 flex items-center justify-center"
-              >
-                <span
-                  id="proIconEmoji"
-                  class="text-xl sm:text-2xl"
-                >
-                  ➖
-                </span>
-              </div>
-              <div class="flex-1 min-w-0">
-                <div class="flex flex-wrap items-center gap-2 mb-2">
-                  <span
-                    id="proVerdictLabel"
-                    class="text-base sm:text-xl font-semibold text-amber-200"
-                  >
-                    Neutral / marginal
-                  </span>
-                  <span
-                    id="proConfidence"
-                    class="px-2.5 py-1 rounded-lg bg-white/5 border border-white/10 text-xs sm:text-sm text-slate-300"
-                  >
-                    80% confidence
-                  </span>
-                </div>
-                <p
-                  id="proSummary"
-                  class="text-sm sm:text-base text-slate-200 leading-relaxed"
-                >
-                  Verdict summary from RaceMeta will appear here.
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <!-- Performance metrics grid -->
-        <div>
-          <h3 class="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
-            Performance metrics
-          </h3>
-          <div
-            id="proMetricsGrid"
-            class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"
-          >
-            <!-- Filled dynamically -->
-          </div>
-        </div>
-
-        <!-- Detailed analysis -->
-        <div>
-          <h3 class="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
-            Detailed analysis
-          </h3>
-          <div class="bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4 sm:p-5">
-            <div
-              id="proReasons"
-              class="space-y-3 sm:space-y-4"
-            >
-              <!-- Filled dynamically -->
-            </div>
-          </div>
-        </div>
-
-        <!-- Recommended strategy -->
-        <div id="proAltBlock" class="hidden">
-          <h3 class="text-base sm:text-lg font-semibold text-white mb-3 sm:mb-4">
-            Recommended strategy
-          </h3>
-          <div class="relative">
-            <div class="absolute -inset-1 bg-gradient-to-r from-amber-500/20 to-orange-500/20 rounded-2xl blur-2xl opacity-70"></div>
-            <div class="relative bg-gradient-to-br from-amber-500/10 to-orange-500/5 border border-amber-500/30 rounded-2xl p-4 sm:p-5">
-              <p
-                id="proAltText"
-                class="text-sm sm:text-base text-slate-100 leading-relaxed"
-              ></p>
-            </div>
-          </div>
-        </div>
+      <div class="mt-10 space-y-3">
+        <button class="w-full bg-white/5 px-4 py-3 rounded-lg text-left">Was pitting Leclerc on lap 16 in Bahrain actually optimal?</button>
+        <button class="w-full bg-white/5 px-4 py-3 rounded-lg text-left">Should Verstappen have stayed out under the Safety Car in Austria?</button>
+        <button class="w-full bg-white/5 px-4 py-3 rounded-lg text-left">Did Norris box too early covering the undercut in Silverstone?</button>
       </div>
-    </section>
-  </div>
+    </div>
+  </section>
+
+  <!-- SIMPLE SECTION -->
+  <section id="simpleSection" class="hidden pt-12">
+    <div class="max-w-3xl mx-auto px-4 space-y-8">
+
+      <div id="simpleBreadcrumbs" class="text-slate-300 text-sm"></div>
+
+      <div id="simpleVerdictCard" class="card"></div>
+
+      <div id="simpleRecommended" class="card"></div>
+
+      <button
+        id="simpleToPro"
+        type="button"
+        class="w-full py-3 rounded-lg bg-white/10 hover:bg-white/20"
+      >
+        View detailed analysis →
+      </button>
+    </div>
+  </section>
+
+  <!-- PRO SECTION -->
+  <section id="proSection" class="hidden pt-12">
+    <div class="max-w-5xl mx-auto px-4 space-y-8">
+
+      <div id="proBreadcrumbs" class="text-slate-300 text-sm"></div>
+
+      <div id="proVerdictCard" class="card"></div>
+
+      <h2 class="text-xl font-semibold">Performance metrics</h2>
+      <div id="metricsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6"></div>
+
+      <h2 class="text-xl font-semibold">Detailed analysis</h2>
+      <div id="proReasoning" class="space-y-4"></div>
+
+      <h2 class="text-xl font-semibold">Recommended strategy</h2>
+      <div id="proRecommended" class="card"></div>
+
+    </div>
+  </section>
 
   <script>
-    const BACKEND_URL =
-      "https://racemeta-backend-production.up.railway.app/analyze_latest";
+    /* ---------- BACKEND URL ---------- */
+    const BACKEND_URL = "https://racemeta-backend-production.up.railway.app/analyze_latest";
 
-    const askSection = document.getElementById("askSection");
-    const simpleSection = document.getElementById("simpleSection");
-    const proSection = document.getElementById("proSection");
-    const headerControls = document.getElementById("headerControls");
-    const errorBanner = document.getElementById("errorBanner");
-
-    const analyzeBtn = document.getElementById("analyzeBtn");
-    const analyzeBtnLabel = document.getElementById("analyzeBtnLabel");
-    const analyzeSpinner = document.getElementById("analyzeSpinner");
-    const questionInput = document.getElementById("questionInput");
-
-    const viewSimpleBtn = document.getElementById("viewSimpleBtn");
-    const viewProBtn = document.getElementById("viewProBtn");
-    const newAnalysisBtn = document.getElementById("newAnalysisBtn");
-    const simpleToProBtn = document.getElementById("simpleToProBtn");
-    const shortcutLabel = document.getElementById("shortcutLabel");
-
-    const simpleContext = document.getElementById("simpleContext");
-    const simpleGlow = document.getElementById("simpleGlow");
-    const simpleIconWrapper = document.getElementById("simpleIconWrapper");
-    const simpleIconEmoji = document.getElementById("simpleIconEmoji");
-    const simpleVerdictLabel = document.getElementById("simpleVerdictLabel");
-    const simpleConfidence = document.getElementById("simpleConfidence");
-    const simpleSummary = document.getElementById("simpleSummary");
-    const simpleAltBlock = document.getElementById("simpleAltBlock");
-    const simpleAltText = document.getElementById("simpleAltText");
-    const simpleMetricsRow = document.getElementById("simpleMetricsRow");
-
-    const proContext = document.getElementById("proContext");
-    const proGlow = document.getElementById("proGlow");
-    const proIconWrapper = document.getElementById("proIconWrapper");
-    const proIconEmoji = document.getElementById("proIconEmoji");
-    const proVerdictLabel = document.getElementById("proVerdictLabel");
-    const proConfidence = document.getElementById("proConfidence");
-    const proSummary = document.getElementById("proSummary");
-    const proReasons = document.getElementById("proReasons");
-    const proAltBlock = document.getElementById("proAltBlock");
-    const proAltText = document.getElementById("proAltText");
-    const proMetricsGrid = document.getElementById("proMetricsGrid");
-
-    if (navigator.platform && navigator.platform.includes("Mac")) {
-      shortcutLabel.textContent = "⌘";
+    /* ---------- SAFE ELEMENT LOOKUP ---------- */
+    function safeGet(id) {
+      const el = document.getElementById(id);
+      if (!el) console.warn("Missing element:", id);
+      return el;
     }
 
-    let lastResult = null;
-    let fromMock = false;
+    const askSection = safeGet("askSection");
+    const simpleSection = safeGet("simpleSection");
+    const proSection = safeGet("proSection");
+    const errorBanner = safeGet("errorBanner");
 
-    function verdictStyles(type) {
-      if (type === "optimal") {
-        return {
-          label: "Optimal strategy",
-          color: "text-emerald-300",
-          glow: "from-emerald-500/40 to-teal-500/40",
-          emoji: "✅",
-        };
-      }
-      if (type === "suboptimal") {
-        return {
-          label: "Suboptimal strategy",
-          color: "text-red-300",
-          glow: "from-red-500/40 to-rose-500/40",
-          emoji: "⚠️",
-        };
-      }
-      return {
-        label: "Neutral / marginal",
-        color: "text-amber-200",
-        glow: "from-amber-500/40 to-orange-500/40",
-        emoji: "➖",
-      };
-    }
+    const analyzeBtn = safeGet("analyzeBtn");
+    const analyzeBtnLabel = safeGet("analyzeBtnLabel");
+    const analyzeSpinner = safeGet("analyzeSpinner");
+    const questionInput = safeGet("questionInput");
 
-    function setGlow(element, gradient) {
-      element.className =
-        "absolute -inset-1 rounded-2xl blur-2xl opacity-70 bg-gradient-to-r " +
-        gradient;
-    }
+    const simpleVerdictCard = safeGet("simpleVerdictCard");
+    const simpleBreadcrumbs = safeGet("simpleBreadcrumbs");
+    const simpleRecommended = safeGet("simpleRecommended");
+    const simpleToPro = safeGet("simpleToPro");
 
-    function setIconWrapper(element, type) {
-      let border, bg;
-      if (type === "optimal") {
-        border = "border-emerald-500/40";
-        bg = "bg-emerald-500/10";
-      } else if (type === "suboptimal") {
-        border = "border-red-500/40";
-        bg = "bg-red-500/10";
-      } else {
-        border = "border-amber-500/40";
-        bg = "bg-amber-500/10";
-      }
-      element.className =
-        "p-3 sm:p-4 rounded-xl border " +
-        border +
-        " " +
-        bg +
-        " flex items-center justify-center";
-    }
+    const proVerdictCard = safeGet("proVerdictCard");
+    const proBreadcrumbs = safeGet("proBreadcrumbs");
+    const metricsGrid = safeGet("metricsGrid");
+    const proReasoning = safeGet("proReasoning");
+    const proRecommended = safeGet("proRecommended");
 
-    function metricsToArray(metricsObj) {
-      if (!metricsObj || typeof metricsObj !== "object") return [];
-      return Object.keys(metricsObj).map((key) => metricsObj[key]);
-    }
+    const simpleMode = safeGet("simpleMode");
+    const proMode = safeGet("proMode");
+    const newAnalysis = safeGet("newAnalysis");
 
-    function sortMetricsForSimple(metricsArray) {
-      return [...metricsArray].sort((a, b) => {
-        const scoreA =
-          a.impact === "negative" ? 100 - (a.score || 0) : a.score || 0;
-        const scoreB =
-          b.impact === "negative" ? 100 - (b.score || 0) : b.score || 0;
-        return scoreB - scoreA;
-      });
-    }
 
-    function buildRaceContextRow(, raceContext, colorForFirstDot) {
-      container.innerHTML = "";
-      const ctx = raceContext || {};
-      const parts = [
-        {
-          dot: colorForFirstDot || "bg-red-400",
-          text: ctx.driver || "Driver (detected from question)",
-        },
-        {
-          dot: "bg-slate-600",
-          text: ctx.race || "Latest race (OpenF1)",
-        },
-        {
-          dot: "bg-slate-600",
-          text: ctx.lap ? "Lap " + ctx.lap : "Lap –",
-        },
-        {
-          dot: "bg-slate-600",
-          text: ctx.position || "Position –",
-        },
-      ];
-      parts.forEach((p) => {
-        const item = document.createElement("div");
-        item.className = "flex items-center gap-2";
-        item.innerHTML =
-          '<div class="w-1.5 h-1.5 rounded-full ' +
-          p.dot +
-          '"></div><span>' +
-          p.text +
-          "</span>";
-        container.appendChild(item);
-      });
-    }
-
-    function applyResultToSimple(result) {
-      const vType = result.verdict_type || "neutral";
-      const styles = verdictStyles(vType);
-
-      setGlow(simpleGlow, styles.glow);
-      simpleIconEmoji.textContent = styles.emoji;
-      setIconWrapper(simpleIconWrapper, vType);
-
-      simpleVerdictLabel.textContent =
-        result.summary || styles.label || "Neutral / marginal";
-      simpleVerdictLabel.className =
-        styles.color + " text-base sm:text-xl font-semibold";
-
-      const conf = result.confidence != null ? result.confidence : 80;
-      simpleConfidence.textContent = "Confidence ~" + conf + "%";
-
-      if (result.verdict) {
-        // The full template including Why/Alt/Take
-        simpleSummary.textContent = result.verdict;
-      } else if (result.summary) {
-        simpleSummary.textContent = result.summary;
-      } else {
-        simpleSummary.textContent =
-          "RaceMeta could not form a clear verdict from the backend response.";
-      }
-
-      buildRaceContextRow(
-        simpleContext,
-        result.race_context,
-        "bg-red-400"
-      );
-
-      // Quick metrics (top 3)
-      simpleMetricsRow.innerHTML = "";
-      const metricsArr = sortMetricsForSimple(
-        metricsToArray(result.metrics)
-      ).slice(0, 3);
-
-      if (metricsArr.length === 0) {
-        const placeholder = document.createElement("div");
-        placeholder.className = "col-span-1 sm:col-span-3 text-sm text-slate-500";
-        placeholder.textContent =
-          "Metrics will appear here when RaceMeta can compute tyre life, track position and traffic impact.";
-        simpleMetricsRow.appendChild(placeholder);
-      } else {
-        metricsArr.forEach((metric) => {
-          const impact =
-            metric.impact === "positive"
-              ? "text-emerald-300"
-              : metric.impact === "negative"
-              ? "text-red-300"
-              : "text-slate-300";
-
-          const el = document.createElement("div");
-          el.className =
-            "text-center px-3 py-2.5 rounded-xl bg-white/5 border border-white/10";
-          el.innerHTML =
-            '<p class="text-[11px] sm:text-xs text-slate-500 mb-1">' +
-            (metric.label || "") +
-            "</p>" +
-            '<p class="text-sm sm:text-base font-medium ' +
-            impact +
-            '">' +
-            (metric.value || "–") +
-            "</p>";
-          simpleMetricsRow.appendChild(el);
-        });
-      }
-
-      if (result.recommended_strategy) {
-        simpleAltText.textContent = result.recommended_strategy;
-        simpleAltBlock.classList.remove("hidden");
-      } else {
-        simpleAltBlock.classList.add("hidden");
-      }
-    }
-
-    function applyResultToPro(result) {
-      const vType = result.verdict_type || "neutral";
-      const styles = verdictStyles(vType);
-
-      setGlow(proGlow, styles.glow);
-      proIconEmoji.textContent = styles.emoji;
-      setIconWrapper(proIconWrapper, vType);
-
-      proVerdictLabel.textContent =
-        result.summary || styles.label || "Neutral / marginal";
-      proVerdictLabel.className =
-        styles.color + " text-base sm:text-xl font-semibold";
-
-      const conf = result.confidence != null ? result.confidence : 80;
-      proConfidence.textContent = conf + "% confidence";
-
-      if (result.verdict) {
-        proSummary.textContent = result.verdict;
-      } else if (result.summary) {
-        proSummary.textContent = result.summary;
-      } else {
-        proSummary.textContent =
-          "RaceMeta could not form a clear verdict from the backend response.";
-      }
-
-      buildRaceContextRow(
-        proContext,
-        result.race_context,
-        "bg-cyan-400"
-      );
-
-      // Metrics grid
-      proMetricsGrid.innerHTML = "";
-      const metricsArr = metricsToArray(result.metrics);
-
-      if (metricsArr.length === 0) {
-        const placeholder = document.createElement("div");
-        placeholder.className = "text-sm text-slate-500";
-        placeholder.textContent =
-          "No structured metrics were available for this call yet. RaceMeta still used OpenF1 stints and weather for the verdict.";
-        proMetricsGrid.appendChild(placeholder);
-      } else {
-        metricsArr.forEach((metric) => {
-          const score = metric.score || 0;
-          let barColor = "bg-slate-500";
-          if (metric.impact === "positive") barColor = "bg-emerald-500";
-          else if (metric.impact === "negative") barColor = "bg-red-500";
-
-          const card = document.createElement("div");
-          card.className =
-            "relative bg-gradient-to-b from-white/5 to-white/[0.02] border border-white/10 rounded-xl p-4 hover:border-white/20 transition";
-          card.innerHTML =
-            '<div class="flex items-start justify-between mb-2">' +
-            '<div class="min-w-0">' +
-            '<p class="text-xs text-slate-400 mb-0.5">' +
-            (metric.label || "") +
-            "</p>" +
-            '<p class="text-lg text-white truncate">' +
-            (metric.value || "–") +
-            "</p>" +
-            "</div>" +
-            "</div>" +
-            '<p class="text-[11px] text-slate-500 mb-3">' +
-            (metric.description || "") +
-            "</p>" +
-            '<div class="h-1.5 w-full bg-white/5 rounded-full overflow-hidden">' +
-            '<div class="' +
-            barColor +
-            ' h-full rounded-full" style="width:' +
-            (score || 0) +
-            '%;"></div>' +
-            "</div>";
-          proMetricsGrid.appendChild(card);
-        });
-      }
-
-      // Reasoning lines
-      proReasons.innerHTML = "";
-      const lines = result.reasoning && result.reasoning.length
-        ? result.reasoning
-        : [
-            "Backend did not return structured reasoning; only a single verdict text was available.",
-          ];
-
-      lines.forEach((reason, index) => {
-        const row = document.createElement("div");
-        row.className = "flex gap-3";
-        row.innerHTML =
-          '<div class="flex-shrink-0 w-6 h-6 flex items-center justify-center rounded-lg border border-cyan-500/40 bg-cyan-500/10 text-[11px] text-cyan-300 mt-0.5">' +
-          (index + 1) +
-          "</div>" +
-          '<p class="flex-1 text-sm sm:text-base leading-relaxed text-slate-200">' +
-          reason +
-          "</p>";
-        proReasons.appendChild(row);
-      });
-
-      if (result.recommended_strategy) {
-        proAltText.textContent = result.recommended_strategy;
-        proAltBlock.classList.remove("hidden");
-      } else {
-        proAltBlock.classList.add("hidden");
-      }
-    }
-
-    function mockResult() {
-      return {
-        summary: "Suboptimal early stop",
-        verdict_type: "suboptimal",
-        confidence: 87,
-        verdict:
-          "Verdict: Suboptimal early stop.\n\nWhy:\n- Tyre degradation was only at 28% – well below a forced-stop threshold.\n- Pitting 2 laps before the main undercut window sacrificed track position.\n- Car rejoined in traffic and lost ~4s battling slower cars.\n\nAlt: Extend to the main undercut window.\nTake: In high-deg races, track position plus a clean undercut window usually beats “safe” early stops.",
-        reasoning: [
-          "Tyre degradation was only at ~28% – far from a forced stop.",
-          "Pitting before the main undercut window sacrificed track position for little gain.",
-          "Rejoining in traffic erased most of the pace advantage from fresh tyres.",
-        ],
-        recommended_strategy:
-          "Extend the stint into the main undercut window, then box into clear air rather than traffic.",
-        race_context: {
-          driver: "Example driver",
-          race: "Latest race (demo)",
-          lap: 18,
-          position: "P2 → P4",
-        },
-        metrics: {
-          tyre_life: {
-            label: "Tyre life",
-            value: "4 laps",
-            description:
-              "Estimated usable life left in this stint when the stop was made.",
-            score: 70,
-            impact: "positive",
-          },
-        },
-      };
-    }
-
-    function showAsk() {
-      askSection.classList.remove("hidden");
-      simpleSection.classList.add("hidden");
-      proSection.classList.add("hidden");
-      headerControls.classList.add("hidden");
-      errorBanner.classList.add("hidden");
-      lastResult = null;
-      fromMock = false;
-    }
-
-    function showSimple() {
-      if (!lastResult) return;
-      askSection.classList.add("hidden");
-      simpleSection.classList.remove("hidden");
-      proSection.classList.add("hidden");
-      headerControls.classList.remove("hidden");
-
-      viewSimpleBtn.classList.add(
-        "bg-red-500",
-        "text-white",
-        "shadow",
-        "shadow-red-500/40"
-      );
-      viewProBtn.classList.remove(
-        "bg-red-500",
-        "text-white",
-        "shadow",
-        "shadow-red-500/40"
-      );
-      viewSimpleBtn.classList.remove("text-slate-400");
-      viewProBtn.classList.add("text-slate-400");
-    }
-
-    function showPro() {
-      if (!lastResult) return;
+    /* ---------- UI HELPERS ---------- */
+    function show(section) {
       askSection.classList.add("hidden");
       simpleSection.classList.add("hidden");
-      proSection.classList.remove("hidden");
-      headerControls.classList.remove("hidden");
-
-      viewProBtn.classList.add(
-        "bg-red-500",
-        "text-white",
-        "shadow",
-        "shadow-red-500/40"
-      );
-      viewSimpleBtn.classList.remove(
-        "bg-red-500",
-        "text-white",
-        "shadow",
-        "shadow-red-500/40"
-      );
-      viewProBtn.classList.remove("text-slate-400");
-      viewSimpleBtn.classList.add("text-slate-400");
+      proSection.classList.add("hidden");
+      section.classList.remove("hidden");
     }
 
-    function setLoading(isLoading) {
-      analyzeBtn.disabled = isLoading;
-      if (isLoading) {
+    function setLoading(state) {
+      if (state) {
         analyzeSpinner.classList.remove("hidden");
-        analyzeBtnLabel.textContent = "Analyzing race data…";
+        analyzeBtnLabel.textContent = "Analyzing…";
+        analyzeBtn.disabled = true;
       } else {
         analyzeSpinner.classList.add("hidden");
         analyzeBtnLabel.textContent = "Analyze strategy";
+        analyzeBtn.disabled = false;
       }
     }
 
-    async function handleAnalyze(question) {
-      const q = question.trim();
+    /* ---------- RENDER FUNCTIONS ---------- */
+    function renderSimple(json) {
+      simpleBreadcrumbs.textContent = json.race_context.label;
+      simpleVerdictCard.innerHTML = `
+        <div class="text-xl font-semibold">${json.summary} 
+          <span class="text-sm text-slate-300 ml-2">(${json.confidence}% confidence)</span>
+        </div>
+        <p class="mt-2 text-slate-300">${json.verdict}</p>
+
+        <div class="mt-6 card w-40">
+          <div class="text-sm text-slate-300">Tyre life</div>
+          <div class="text-xl font-semibold">${json.metrics?.tyre_life?.value || "-"}</div>
+        </div>
+      `;
+      simpleRecommended.innerHTML = `
+        <div class="font-semibold mb-1">Recommended alternative</div>
+        <p class="text-slate-300">${json.recommended_strategy}</p>
+      `;
+    }
+
+    function renderPro(json) {
+      proBreadcrumbs.textContent = json.race_context.label;
+
+      proVerdictCard.innerHTML = `
+        <div class="text-xl font-semibold">${json.summary}
+          <span class="text-sm text-slate-300 ml-2">${json.confidence}% confidence</span>
+        </div>
+        <p class="mt-2 text-slate-300 whitespace-pre-line">${json.verdict}</p>
+      `;
+
+      metricsGrid.innerHTML = "";
+      const metrics = json.metrics || {};
+
+      const metricNames = [
+        "tyre_life",
+        "traffic_cost",
+        "track_position",
+        "pace_delta",
+        "undercut_window",
+        "final_position"
+      ];
+
+      metricNames.forEach(key => {
+        const m = metrics[key];
+        metricsGrid.innerHTML += `
+          <div class="card">
+            <div class="text-sm text-slate-300">${m?.label || key.replace("_"," ")}</div>
+            <div class="text-xl font-semibold">${m?.value || "-"}</div>
+            <p class="text-slate-400 text-sm mt-2">${m?.description || "Metric not computed yet."}</p>
+          </div>
+        `;
+      });
+
+      proReasoning.innerHTML = "";
+      json.reasoning.forEach((point, i) => {
+        proReasoning.innerHTML += `
+          <div class="card flex gap-3">
+            <div class="w-6 h-6 rounded-full bg-white/10 flex items-center justify-center text-sm">${i+1}</div>
+            <p>${point}</p>
+          </div>
+        `;
+      });
+
+      proRecommended.innerHTML = `
+        <p class="text-lg">${json.recommended_strategy}</p>
+      `;
+    }
+
+    /* ---------- BUTTON HANDLERS ---------- */
+    analyzeBtn.onclick = async () => {
+      const q = questionInput.value.trim();
       if (!q) return;
       setLoading(true);
-      errorBanner.classList.add("hidden");
 
       try {
         const res = await fetch(BACKEND_URL, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ question: q }),
+          body: JSON.stringify({ question: q })
         });
 
-        if (!res.ok) {
-          throw new Error("HTTP " + res.status);
-        }
+        if (!res.ok) throw new Error("Backend error");
+        const json = await res.json();
 
-        const data = await res.json();
-        if (data.error) {
-          throw new Error(data.error);
-        }
+        renderSimple(json);
+        renderPro(json);
+        show(simpleSection);
+        errorBanner.classList.add("hidden");
 
-        lastResult = data;
-        fromMock = false;
-      } catch (err) {
-        console.error(err);
+      } catch (e) {
+        console.error(e);
         errorBanner.classList.remove("hidden");
-        lastResult = mockResult();
-        fromMock = true;
-      } finally {
-        if (lastResult) {
-          applyResultToSimple(lastResult);
-          applyResultToPro(lastResult);
-          showSimple();
-        }
-        setLoading(false);
       }
-    }
 
-    analyzeBtn.addEventListener("click", () => {
-      handleAnalyze(questionInput.value);
-    });
+      setLoading(false);
+    };
 
-    questionInput.addEventListener("keydown", (e) => {
-      if (e.key === "Enter" && (e.metaKey || e.ctrlKey)) {
-        e.preventDefault();
-        handleAnalyze(questionInput.value);
-      }
-    });
+    simpleToPro.onclick = () => show(proSection);
+    simpleMode.onclick = () => show(simpleSection);
+    proMode.onclick = () => show(proSection);
+    newAnalysis.onclick = () => show(askSection);
 
-    document.querySelectorAll(".example-btn").forEach((btn) => {
-      btn.addEventListener("click", (e) => {
-        const example = e.currentTarget.getAttribute("data-example") || "";
-        questionInput.value = example;
-        handleAnalyze(example);
-      });
-    });
-
-    viewSimpleBtn.addEventListener("click", showSimple);
-    viewProBtn.addEventListener("click", showPro);
-    simpleToProBtn.addEventListener("click", showPro);
-    newAnalysisBtn.addEventListener("click", () => {
-      questionInput.value = "";
-      showAsk();
-    });
-
-    showAsk();
   </script>
+
 </body>
 </html>
